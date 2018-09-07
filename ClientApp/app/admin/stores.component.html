@@ -1,0 +1,16 @@
+<div *ngFor="let store of stores" class="card card-outline-primary m-0 p-0">
+    <div class="card-header  m-0 p-0">
+            <span class="h4">{{store.storeName}}</span>
+            <span class="float-right badge badge-pill badge-primary">
+                    {{store.storeId}}
+            </span>
+    </div>
+    <div class="card-block  m-0 p-0">
+            <p class="card-text p-a-1">{{store.address}}</p>
+            <p class="card-text p-a-1">{{store.city}}</p>
+            <p class="card-text p-a-1">{{store.postCode}}</p>
+            <button class="float-right btn btn-sm btn-success" (click)="setStore(store)">
+                Select
+            </button>
+    </div>
+</div>

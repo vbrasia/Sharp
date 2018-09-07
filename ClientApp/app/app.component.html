@@ -1,0 +1,7 @@
+<div class="bg-danger text-white text-center p-0 m-0" style="position: fixed;top: 0;width: 100%;z-index: 20" *ngIf="error">
+    <h6 *ngFor="let e of error">{{e}}</h6>
+    <button class="btn btn-warning" (click)="clearError()">OK</button>
+</div>
+<div (resized)="onResized($event)">
+    <router-outlet></router-outlet>
+</div>

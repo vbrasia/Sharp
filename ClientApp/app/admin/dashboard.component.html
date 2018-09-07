@@ -1,0 +1,157 @@
+<div class="row">
+    <div class="w-100 m-0 p-0 text-center">
+        <h5 class="text-success">
+            Dashboard
+        </h5>
+    </div>
+</div>
+<div class="row my-1">
+    <div class="col-sm-12 col-lg-12 col-md-12 col-xs-12" *ngIf="screenWidth > 500">
+        <form novalidate #authForm="ngForm">
+            <table table-xs border="0">
+                <tr>
+                    <th class="text-success">
+                        Period
+                    </th>
+                    <td (click)="setPeriod('')">
+                        <input #name="ngModel" name="startDate" type="datetime-local" class="form-control form-control-sm form-control-xs px-0 mx-0" style="max-width: 200px;"
+                        [(ngModel)]="startDate" required />
+                    </td>
+                    <td (click)="setPeriod('')">
+                        <input #name="ngModel" name="endDate" type="datetime-local" class="form-control form-control-sm form-control-xs px-0 mx-0" style="max-width: 200px;"
+                        [(ngModel)]="endDate" required />
+                    </td>
+                    <td>
+                        <button class="btn btn-success btn-sm btn-xs" [disabled]="authForm.invalid" (click)="getSales()">GET</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div class="col-sm-12 col-lg-12 col-md-12 col-xs-12" *ngIf="screenWidth <= 500">
+        <form novalidate #authForm="ngForm">
+            <table table-xs border="0">
+                <tr>
+                    <th class="text-success">
+                        Start Date
+                    </th>
+                    <td (click)="setPeriod('')">
+                        <input #name="ngModel" name="startDate" type="datetime-local" class="form-control form-control-sm form-control-x px-0 mx-0" style="max-width: 200px;"
+                        [(ngModel)]="startDate" required />
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th class="text-success">
+                        End Date
+                    </th>
+                    <td (click)="setPeriod('')">
+                        <input #name="ngModel" name="endDate" type="datetime-local" class="form-control form-control-sm form-control-xs px-0 mx-0" style="max-width: 200px;"
+                        [(ngModel)]="endDate" required />
+                    </td>
+                    <td>
+                        <button class="btn btn-success btn-sm btn-xs" [disabled]="authForm.invalid" (click)="getSales()">GET</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+<div class="row my-1">
+    <div class="col-sm-12 col-lg-12 col-md-12 col-xs-12">
+        <div class="pull-right">
+            <div class="btn-group btn-group-justified">
+                <button type="button" class="btn btn-sm btn-primary" [ngClass]="{'active':period=='Today'}"
+                    (click)="setPeriod('Today')">
+                    Today
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" [ngClass]="{'active':period=='Yesterday'}"
+                    (click)="setPeriod('Yesterday')">
+                    Yesterday
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" [ngClass]="{'active':period=='This Week'}"
+                    (click)="setPeriod('This Week')">
+                    This Week
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" [ngClass]="{'active':period=='Last Week'}"
+                    (click)="setPeriod('Last Week')">
+                    Last Week
+                </button>
+            </div>
+            <div class="btn-group btn-group-justified">
+                <button type="button" class="btn btn-sm btn-primary" [ngClass]="{'active':period=='This Month'}"
+                    (click)="setPeriod('This Month')">
+                    This Month
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" [ngClass]="{'active':period=='Last Month'}"
+                    (click)="setPeriod('Last Month')">
+                    Last Month
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" [ngClass]="{'active':period=='This Quarter'}"
+                    (click)="setPeriod('This Quarter')">
+                    This Quarter
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" [ngClass]="{'active':period=='Last Quarter'}"
+                    (click)="setPeriod('Last Quarter')">
+                    Last Quarter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row my-0 py-0">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="btn-group btn-group-justified">
+            <button type="button" class="btn btn-sm btn-success" [ngClass]="{'active':chart=='Bar Chart'}"
+                (click)="setChart('Bar Chart')">
+                Bar Chart
+            </button>
+            <button type="button" class="btn btn-sm btn-success" [ngClass]="{'active':chart=='Pie Chart'}"
+                (click)="setChart('Pie Chart')">
+                Pie Chart
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div  class="chart-container" style="position: relative; height:500px; width:100%">
+            <canvas [hidden]="!isBarchart()" id="dailyBarChartSales"  class="chartjs-render-monitor" style="display: block;"></canvas>
+            <canvas [hidden]="!isPieChart()" id="dailyPieChartSales"  class="chartjs-render-monitor" style="display: block;"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div  class="chart-container" style="position: relative; height:500px; width:100%">
+            <canvas [hidden]="!isBarchart()" id="dailyBarChartQty"  class="chartjs-render-monitor" style="display: block;"></canvas>
+            <canvas [hidden]="!isPieChart()" id="dailyPieChartQty"  class="chartjs-render-monitor" style="display: block;"></canvas>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div  class="chart-container" style="position: relative; height:500px; width:100%">
+            <canvas [hidden]="!isBarchart()" id="departmentBarChartSales"  class="chartjs-render-monitor" style="display: block;"></canvas>
+            <canvas [hidden]="!isPieChart()" id="departmentPieChartSales"  class="chartjs-render-monitor" style="display: block;"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div  class="chart-container" style="position: relative; height:500px; width:100%">
+            <canvas [hidden]="!isBarchart()" id="departmentBarChartQty"  class="chartjs-render-monitor" style="display: block;"></canvas>
+            <canvas [hidden]="!isPieChart()" id="departmentPieChartQty"  class="chartjs-render-monitor" style="display: block;"></canvas>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div  class="chart-container" style="position: relative; height:500px; width:100%">
+            <canvas [hidden]="!isBarchart()" id="itemBarChartSales"  class="chartjs-render-monitor" style="display: block;"></canvas>
+            <canvas [hidden]="!isPieChart()" id="itemPieChartSales"  class="chartjs-render-monitor" style="display: block;"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div  class="chart-container" style="position: relative; height:500px; width:100%">
+            <canvas [hidden]="!isBarchart()" id="itemBarChartQty"  class="chartjs-render-monitor" style="display: block;"></canvas>
+            <canvas [hidden]="!isPieChart()" id="itemPieChartQty"  class="chartjs-render-monitor" style="display: block;"></canvas>
+        </div>
+    </div>
+</div>

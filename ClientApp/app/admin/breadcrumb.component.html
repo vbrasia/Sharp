@@ -1,0 +1,26 @@
+<div class="text-light">
+<div class="btn-group btn-group-justified  my-1 mx-0 px-0" >
+    <button class="btn  btn-sm btn-primary mx-0 px-0" (click)="inter.setNode('Stores')" >
+        Stores
+    </button>
+    <button class="btn btn-sm btn-primary" *ngIf="isStoreSelected">
+        <i class="fa fa-caret-right" ></i>
+    </button>
+    <button class="btn btn-sm btn-primary mx-0 px-0" *ngIf="isStoreSelected" (click)="inter.setNode('Home')">
+        Home
+    </button>
+    <button class="btn btn-sm btn-primary" *ngIf="selectedNode != ''">
+        <i class="fa fa-caret-right" ></i>
+    </button>
+    <button class="btn btn-sm btn-primary mx-0 px-0" *ngIf="selectedNode != ''" (click)="inter.setNode(selectedNode)">
+            {{selectedNode}}
+    </button>
+    <button class="btn btn-sm btn-primary" *ngIf="selectedChild!= ''">
+        <i class="fa fa-caret-right" ></i>
+    </button>
+    <button class="btn btn-sm btn-primary mx-0 px-0" *ngIf="selectedChild != ''">
+            {{selectedChild}}
+    </button>
+
+</div>
+</div>

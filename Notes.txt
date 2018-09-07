@@ -1,0 +1,11 @@
+Using a Segment Variable
+{ path: "detail/:id", component: ProductDetailComponent },
+Page : 155
+
+Creating the Cart Storage Web Service
+Page : 199
+
+dotnet restore
+
+dotnet sql-cache create "Server=localhost,5100;Database=SportsStore;User Id=sa;
+Password=mySecret123;MultipleActiveResultSets=true" "dbo" "SessionData"
