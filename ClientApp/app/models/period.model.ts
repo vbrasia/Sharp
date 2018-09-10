@@ -6,6 +6,8 @@ export class Period {
         public periodName?: string,
         public chart?: string,
         public pageNumber?: number,
-        public linesPerPage?: number
+        public linesPerPage?: number,
+        public orderBy?: string,
+        public isAsc?: boolean
     ) {}
 }

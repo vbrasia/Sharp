@@ -108,10 +108,25 @@
             <div class="w-100 m-0 p-0 pr-1" style="overflow-y:scroll;  max-height:400px">
                 <table class="table table-xs table-striped">
                     <thead class="m-0 p-0 bg-info text-white">
-                        <tr class="m-0 p-0">
-                            <th class="m-0 p-0 pl-1">Department</th>
-                            <th class="m-0 p-0 pl-1">Qty</th>
-                            <th class="m-0 p-0 text-right">Amount</th>
+                        <tr class="m-0 p-0"> 
+                            <th (click)="orderByHeader('department')"  class="m-0 p-0 pl-1">Department
+                                
+                                <span [hidden]="orderBy!='department'" >
+                                    <i [ngClass]="isAsc ? 'fa fa-caret-up': 'fa fa-caret-down'" ></i>
+                                </span>
+                                
+                            </th>
+                            <th  (click)="orderByHeader('qty')" class="m-0 p-0 pl-1">Qty
+                                
+                                <span [hidden]="orderBy!='qty'" >
+                                    <i [ngClass]="isAsc ? 'fa fa-caret-up': 'fa fa-caret-down'" ></i>
+                                </span>
+                            </th>
+                            <th (click)="orderByHeader('amount')" class="m-0 p-0 text-right">Amount
+                                <span [hidden]="orderBy!='amount'"  >
+                                    <i [ngClass]="isAsc ? 'fa fa-caret-up': 'fa fa-caret-down'" ></i>
+                                </span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="m-0 p-0">

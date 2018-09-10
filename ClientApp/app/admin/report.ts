@@ -38,6 +38,8 @@ export class Report {
         this.departmentSalesPeriod.endDate = de;
         this.departmentSalesPeriod.periodName = 'Today';
         this.departmentSalesPeriod.chart = 'Bar Chart';
+        this.departmentSalesPeriod.orderBy = 'amount';
+        this.departmentSalesPeriod.isAsc = false;
         this.departmentsSales = [];
 
         this.itemSalesPeriod = new Period();
@@ -45,6 +47,8 @@ export class Report {
         this.itemSalesPeriod.endDate = de;
         this.itemSalesPeriod.periodName = 'Today';
         this.itemSalesPeriod.chart = 'Bar Chart';
+        this.itemSalesPeriod.orderBy = 'amount';
+        this.departmentSalesPeriod.isAsc = false;
         this.itemsSales = [];
 
         this.transactionsPeriod = new Period();

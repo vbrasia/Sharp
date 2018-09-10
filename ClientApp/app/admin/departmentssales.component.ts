@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { Repository } from '../models/repository';
 import { Router } from '@angular/router';
 import {DepartmentDto} from '../models/departmentDto.model';
@@ -20,6 +20,7 @@ const departmentUrl = 'api/departments';
         PieChart: any;
         startDate?: string;
         endDate?: string;
+        test?: string;
         constructor(private repo: Repository, private localStorage: LocalStorage, private report: Report, private router: Router) {
             if (!repo.selecttedStore) {
                 this.router.navigateByUrl('/admin/stores');
@@ -44,21 +45,30 @@ const departmentUrl = 'api/departments';
             if (( this.report.departmentSalesPeriod.startDate) && ( this.report.departmentSalesPeriod.endDate)) {
                 this.startDate = this.report.departmentSalesPeriod.startDate;
                 this.endDate = this.report.departmentSalesPeriod.endDate;
-                if (!this.BarChart) {
-                    this.getBarChart();
-                } else {
-                    this.removeData(this.BarChart);
-                    this.addData(this.BarChart, this.departmentSales.map(x => x.department),
-                    this.departmentSales.map(x => x.amount));
-                }
-                if (!this.PieChart) {
-                    this.getPieChart();
-                } else {
-                    this.removeData(this.PieChart);
-                    this.addData(this.PieChart, this.departmentSales.map(x => x.department),
-                    this.departmentSales.map(x => x.amount));
-                }
+                this.getCharts();
             }
+        }
+        private getCharts() {
+            if (!this.BarChart) {
+                this.getBarChart();
+            } else {
+                this.removeData(this.BarChart);
+                this.addData(this.BarChart, this.departmentSales.map(x => x.department),
+                this.departmentSales.map(x => x.amount));
+            }
+            if (!this.PieChart) {
+                this.getPieChart();
+            } else {
+                this.removeData(this.PieChart);
+                this.addData(this.PieChart, this.departmentSales.map(x => x.department),
+                this.departmentSales.map(x => x.amount));
+            }
+        }
+        get orderBy(): string {
+             return this.report.departmentSalesPeriod.orderBy;
+        }
+        get isAsc(): boolean {
+            return this.report.departmentSalesPeriod.isAsc;
         }
         get screenWidth(): number {
             return this.repo.screenWidth;
@@ -152,20 +162,7 @@ const departmentUrl = 'api/departments';
                 this.savePeriod(this.report.departmentSalesPeriod);
                 this.repo.sendRequest(RequestMethod.Post, url, this.repo.storeDto).subscribe(response => {
                     this.report.departmentsSales = response;
-                    if (!this.BarChart) {
-                        this.getBarChart();
-                    } else {
-                        this.removeData(this.BarChart);
-                        this.addData(this.BarChart, this.departmentSales.map(x => x.department),
-                        this.departmentSales.map(x => x.amount));
-                    }
-                    if (!this.PieChart) {
-                        this.getPieChart();
-                    } else {
-                        this.removeData(this.PieChart);
-                        this.addData(this.PieChart, this.departmentSales.map(x => x.department),
-                        this.departmentSales.map(x => x.amount));
-                    }
+                    this.getCharts();
                     this.repo.apiBusy = false;
                 });
             }
@@ -186,10 +183,41 @@ const departmentUrl = 'api/departments';
             }
         }
         get departmentSales(): DepartmentDto[] {
-            return this.report.departmentsSales.sort((a , b) => {
-                const amtDiff =  b.amount - a.amount;
-                if ( amtDiff ) {return amtDiff; }
-            });
+          if (this.orderBy === 'department') {
+                if (this.isAsc) {
+                    return this.report.departmentsSales.sort((a , b) => {
+                        return a.department.localeCompare(b.department);
+                    });
+                } else {
+                    return this.report.departmentsSales.sort((a , b) => {
+                        return b.department.localeCompare(a.department);
+                    });
+                }
+            } else if (this.orderBy === 'qty') {
+                if (this.isAsc) {
+                    return this.report.departmentsSales.sort((a , b) => {
+                        const qtyDiff =  a.qty - b.qty;
+                        if ( qtyDiff ) {return qtyDiff; }
+                    });
+                } else {
+                    return this.report.departmentsSales.sort((a , b) => {
+                        const qtyDiff =  b.qty - a.qty;
+                        if ( qtyDiff ) {return qtyDiff; }
+                    });
+                }
+            } else if ((this.orderBy === 'amount')) {
+                if (this.isAsc) {
+                    return this.report.departmentsSales.sort((a , b) => {
+                        const amtDiff =  a.amount - b.amount;
+                        if ( amtDiff ) {return amtDiff; }
+                    });
+                } else {
+                    return this.report.departmentsSales.sort((a , b) => {
+                        const amtDiff =  b.amount - a.amount;
+                        if ( amtDiff ) {return amtDiff; }
+                    });
+                }
+            }
         }
         setPeriod(tag?: string) {
             if (tag !== this.report.departmentSalesPeriod.periodName) {
@@ -208,6 +236,17 @@ const departmentUrl = 'api/departments';
         get period(): string {
             return this.report.departmentSalesPeriod.periodName;
         }
+        orderByHeader(header?: string) {
+            if (this.report.departmentSalesPeriod.orderBy !== header) {
+                this.report.departmentSalesPeriod.orderBy = header;
+                this.report.departmentSalesPeriod.isAsc = false;
+            } else {
+                this.report.departmentSalesPeriod.isAsc = !this.report.departmentSalesPeriod.isAsc;
+            }
+            this.savePeriod(this.report.departmentSalesPeriod);
+            this.getCharts();
+        }
+
         setChart(tag?: string) {
             this.report.departmentSalesPeriod.chart = tag;
             this.savePeriod(this.report.departmentSalesPeriod);

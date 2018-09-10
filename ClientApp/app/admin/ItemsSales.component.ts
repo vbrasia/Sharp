@@ -202,10 +202,46 @@ const itemUrl = 'api/items';
 
         }
         get itemSales(): ItemDto[] {
-            return this.report.itemsSales.sort((a , b) => {
+            if (this.orderBy === 'product') {
+                if (this.isAsc) {
+                    return this.report.itemsSales.sort((a , b) => {
+                        return a.description.localeCompare(b.description);
+                    });
+                } else {
+                    return this.report.itemsSales.sort((a , b) => {
+                        return b.description.localeCompare(a.description);
+                    });
+                }
+            } else if (this.orderBy === 'qty') {
+                if (this.isAsc) {
+                    return this.report.itemsSales.sort((a , b) => {
+                        const qtyDiff =  a.quantity - b.quantity;
+                        if ( qtyDiff ) {return qtyDiff; }
+                    });
+                } else {
+                    return this.report.itemsSales.sort((a , b) => {
+                        const qtyDiff =  b.quantity - a.quantity;
+                        if ( qtyDiff ) {return qtyDiff; }
+                    });
+                }
+            } else if ((this.orderBy === 'amount')) {
+                if (this.isAsc) {
+                    return this.report.itemsSales.sort((a , b) => {
+                        const amtDiff =  a.amount - b.amount;
+                        if ( amtDiff ) {return amtDiff; }
+                    });
+                } else {
+                    return this.report.itemsSales.sort((a , b) => {
+                        const amtDiff =  b.amount - a.amount;
+                        if ( amtDiff ) {return amtDiff; }
+                    });
+                }
+            }
+
+           /* return this.report.itemsSales.sort((a , b) => {
                 const amtDiff =  b.amount - a.amount;
                 if ( amtDiff ) {return amtDiff; }
-            });
+            });*/
         }
         setPeriod(tag?: string) {
             if (tag !== this.report.itemSalesPeriod.periodName) {
@@ -221,6 +257,25 @@ const itemUrl = 'api/items';
                 }
             }
         }
+
+        get orderBy(): string {
+            return this.report.itemSalesPeriod.orderBy;
+        }
+
+        get isAsc(): boolean {
+            return this.report.itemSalesPeriod.isAsc;
+        }
+
+        orderByHeader(header?: string) {
+            if (this.orderBy !== header) {
+                this.report.itemSalesPeriod.orderBy = header;
+                this.report.itemSalesPeriod.isAsc = false;
+            } else {
+                this.report.itemSalesPeriod.isAsc = !this.report.itemSalesPeriod.isAsc;
+            }
+            this.savePeriod(this.report.itemSalesPeriod);
+        }
+
         get period(): string {
             return this.report.itemSalesPeriod.periodName;
         }
