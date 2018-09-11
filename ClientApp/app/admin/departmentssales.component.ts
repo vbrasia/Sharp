@@ -20,7 +20,8 @@ const departmentUrl = 'api/departments';
         PieChart: any;
         startDate?: string;
         endDate?: string;
-        test?: string;
+        srvNos?: number[];
+        tillNos?: number[];
         constructor(private repo: Repository, private localStorage: LocalStorage, private report: Report, private router: Router) {
             if (!repo.selecttedStore) {
                 this.router.navigateByUrl('/admin/stores');
@@ -45,6 +46,8 @@ const departmentUrl = 'api/departments';
             if (( this.report.departmentSalesPeriod.startDate) && ( this.report.departmentSalesPeriod.endDate)) {
                 this.startDate = this.report.departmentSalesPeriod.startDate;
                 this.endDate = this.report.departmentSalesPeriod.endDate;
+                this.getSrvNos();
+                this.getTillNos();
                 this.getCharts();
             }
         }
@@ -162,6 +165,8 @@ const departmentUrl = 'api/departments';
                 this.savePeriod(this.report.departmentSalesPeriod);
                 this.repo.sendRequest(RequestMethod.Post, url, this.repo.storeDto).subscribe(response => {
                     this.report.departmentsSales = response;
+                    this.getSrvNos();
+                    this.getTillNos();
                     this.getCharts();
                     this.repo.apiBusy = false;
                 });
@@ -182,37 +187,93 @@ const departmentUrl = 'api/departments';
                 return 0;
             }
         }
+        get filteredDepartmentSales():  DepartmentDto[] {
+            const srvNo = this.chosenSrvNo;
+            const till = this.chosenTillNo;
+            if (srvNo === '0' && till === '0') {
+                return this.report.departmentsSales;
+            } else if (srvNo === '0' && till !== '0') {
+               return this.report.departmentsSales.filter(x => (x.till === Number(till)));
+            } else if (srvNo !== '0' && till === '0') {
+                return this.report.departmentsSales.filter(x => (x.srvNo === Number(srvNo)));
+            } else {
+                return this.report.departmentsSales.filter(x => (x.srvNo === Number(srvNo) && x.till === Number(till)));
+            }
+
+
+        }
+
+        getSrvNos() {
+            this.srvNos = this.report.departmentsSales.map(u => u.srvNo).filter( (value, index, self) => {
+                return self.indexOf(value) === index;
+            } ).sort((a, b ) => {
+                const diff = a - b;
+                if (diff) {return diff; }
+            });
+        }
+
+        getTillNos() {
+            this.tillNos = this.report.departmentsSales.map(u => u.till).filter( (value, index, self) => {
+                return self.indexOf(value) === index;
+            } ).sort((a, b) => {
+                const diff = a - b;
+                if (diff) { return diff ; }
+            });
+        }
+
+        selectedSrvNo(filterVal: string) {
+            if (this.report.departmentSalesPeriod.selectedSvrNo !== filterVal) {
+                this.report.departmentSalesPeriod.selectedSvrNo = filterVal;
+            }
+            this.savePeriod(this.report.departmentSalesPeriod);
+        }
+
+        get chosenSrvNo(): string {
+            return this.report.departmentSalesPeriod.selectedSvrNo;
+        }
+
+        get chosenTillNo(): string {
+            return this.report.departmentSalesPeriod.selectedTillNo;
+        }
+
+        selecteTillNo(filterVal: string) {
+            if (this.report.departmentSalesPeriod.selectedTillNo !== filterVal) {
+                this.report.departmentSalesPeriod.selectedTillNo = filterVal;
+            }
+            this.savePeriod(this.report.departmentSalesPeriod);
+        }
+
         get departmentSales(): DepartmentDto[] {
           if (this.orderBy === 'department') {
                 if (this.isAsc) {
-                    return this.report.departmentsSales.sort((a , b) => {
+                    return this.filteredDepartmentSales.sort((a , b) => {
                         return a.department.localeCompare(b.department);
                     });
                 } else {
-                    return this.report.departmentsSales.sort((a , b) => {
+                    return  this.filteredDepartmentSales.sort((a , b) => {
                         return b.department.localeCompare(a.department);
                     });
                 }
             } else if (this.orderBy === 'qty') {
                 if (this.isAsc) {
-                    return this.report.departmentsSales.sort((a , b) => {
+                    return  this.filteredDepartmentSales.sort((a , b) => {
                         const qtyDiff =  a.qty - b.qty;
                         if ( qtyDiff ) {return qtyDiff; }
                     });
                 } else {
-                    return this.report.departmentsSales.sort((a , b) => {
+                    return  this.filteredDepartmentSales.sort((a , b) => {
                         const qtyDiff =  b.qty - a.qty;
                         if ( qtyDiff ) {return qtyDiff; }
                     });
                 }
             } else if ((this.orderBy === 'amount')) {
                 if (this.isAsc) {
-                    return this.report.departmentsSales.sort((a , b) => {
+                    return  this.filteredDepartmentSales.sort((a , b) => {
                         const amtDiff =  a.amount - b.amount;
                         if ( amtDiff ) {return amtDiff; }
                     });
                 } else {
-                    return this.report.departmentsSales.sort((a , b) => {
+                    return  this.filteredDepartmentSales.sort((a , b) => {
                         const amtDiff =  b.amount - a.amount;
                         if ( amtDiff ) {return amtDiff; }
                     });

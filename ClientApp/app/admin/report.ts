@@ -40,6 +40,8 @@ export class Report {
         this.departmentSalesPeriod.chart = 'Bar Chart';
         this.departmentSalesPeriod.orderBy = 'amount';
         this.departmentSalesPeriod.isAsc = false;
+        this.departmentSalesPeriod.selectedSvrNo = '0';
+        this.departmentSalesPeriod.selectedTillNo = '0';
         this.departmentsSales = [];
 
         this.itemSalesPeriod = new Period();

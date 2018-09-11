@@ -8,6 +8,8 @@ export class Period {
         public pageNumber?: number,
         public linesPerPage?: number,
         public orderBy?: string,
-        public isAsc?: boolean
+        public isAsc?: boolean,
+        public selectedSvrNo?: string,
+        public selectedTillNo?: string
     ) {}
 }
