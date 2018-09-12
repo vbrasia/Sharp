@@ -58,24 +58,28 @@
     </div>    
 </div>
 <div class="row my-1">
-    <div class="col-md-12 col-lg-12 col-xs-12 col-sm-12">
-        <label class="border border-primary">Srv No: </label>
-        <select class="border border-primary"  [(ngModel)]="chosenSrvNo">
-            <option value="0">All</option>
-            <option *ngFor="let value of srvNos" value={{value}} >
-                {{value}}
-            </option>
-        </select>
-        
-        <label class="border border-primary">Till No: </label>
-        <select class="border border-primary" [(ngModel)]="chosenTillNo">
-            <option value="0">All</option>
-            <option *ngFor="let value of tillNos" value={{value}} >
-                {{value}}
-            </option>
-        </select>
-    </div> 
-    
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 mr-0 pr-0">
+        <div class="input-group input-group-sm  m-0 p-0">
+            <div class="input-group-prepend">
+                <span class="border border-primary input-group-text" id="">Srv No</span>
+            </div>
+            <select class="border border-primary"  [(ngModel)]="chosenSrvNo">
+                    <option value="0">All</option>
+                    <option *ngFor="let value of srvNos" value={{value}} >
+                        {{value}}
+                    </option>
+            </select>
+            <div class="input-group-prepend ml-2">
+                <span class="border border-primary input-group-text" id="">Till No</span>
+            </div>
+            <select class="border border-primary"  [(ngModel)]="chosenTillNo">
+                    <option value="0">All</option>
+                    <option *ngFor="let value of tillNos" value={{value}} >
+                        {{value}}
+                    </option>
+            </select>
+        </div>
+    </div>
 </div>
 <div class="row my-1">
     <div class="col-sm-12 col-lg-12 col-md-12 col-xs-12">
