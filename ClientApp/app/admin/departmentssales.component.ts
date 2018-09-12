@@ -208,15 +208,6 @@ const departmentUrl = 'api/departments';
                 if (diff) { return diff ; }
             });
         }
-
-        selectedSrvNo(filterVal: string) {
-            if (this.report.departmentSalesPeriod.selectedSvrNo !== filterVal) {
-                this.report.departmentSalesPeriod.selectedSvrNo = filterVal;
-                this.getGroupByDepartment();
-                this.getCharts();
-            }
-            this.savePeriod(this.report.departmentSalesPeriod);
-        }
         set chosenSrvNo(filterVal: string) {
             if (this.report.departmentSalesPeriod.selectedSvrNo !== filterVal) {
                 this.report.departmentSalesPeriod.selectedSvrNo = filterVal;
@@ -229,11 +220,7 @@ const departmentUrl = 'api/departments';
             return this.report.departmentSalesPeriod.selectedSvrNo;
         }
 
-        get chosenTillNo(): string {
-            return this.report.departmentSalesPeriod.selectedTillNo;
-        }
-
-        selecteTillNo(filterVal: string) {
+        set chosenTillNo(filterVal: string) {
             if (this.report.departmentSalesPeriod.selectedTillNo !== filterVal) {
                 this.report.departmentSalesPeriod.selectedTillNo = filterVal;
                 this.getGroupByDepartment();
@@ -241,6 +228,10 @@ const departmentUrl = 'api/departments';
             }
             this.savePeriod(this.report.departmentSalesPeriod);
         }
+        get chosenTillNo(): string {
+            return this.report.departmentSalesPeriod.selectedTillNo;
+        }
+
         get filteredDepartmentSales():  DepartmentDto[] {
             if (this.report.departmentsSales) {
                 const srvNo = Number(this.chosenSrvNo);
