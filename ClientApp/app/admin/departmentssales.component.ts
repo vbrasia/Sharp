@@ -209,27 +209,27 @@ const departmentUrl = 'api/departments';
             });
         }
         set chosenSrvNo(filterVal: string) {
-            if (this.report.departmentSalesPeriod.selectedSvrNo !== filterVal) {
-                this.report.departmentSalesPeriod.selectedSvrNo = filterVal;
+            if (this.report.departmentSalesPeriod.svrNo !== filterVal) {
+                this.report.departmentSalesPeriod.svrNo = filterVal;
                 this.getGroupByDepartment();
                 this.getCharts();
             }
             this.savePeriod(this.report.departmentSalesPeriod);
         }
         get chosenSrvNo(): string {
-            return this.report.departmentSalesPeriod.selectedSvrNo;
+            return this.report.departmentSalesPeriod.svrNo;
         }
 
         set chosenTillNo(filterVal: string) {
-            if (this.report.departmentSalesPeriod.selectedTillNo !== filterVal) {
-                this.report.departmentSalesPeriod.selectedTillNo = filterVal;
+            if (this.report.departmentSalesPeriod.tillNo !== filterVal) {
+                this.report.departmentSalesPeriod.tillNo = filterVal;
                 this.getGroupByDepartment();
                 this.getCharts();
             }
             this.savePeriod(this.report.departmentSalesPeriod);
         }
         get chosenTillNo(): string {
-            return this.report.departmentSalesPeriod.selectedTillNo;
+            return this.report.departmentSalesPeriod.tillNo;
         }
 
         get filteredDepartmentSales():  DepartmentDto[] {

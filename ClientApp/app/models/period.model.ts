@@ -9,7 +9,7 @@ export class Period {
         public linesPerPage?: number,
         public orderBy?: string,
         public isAsc?: boolean,
-        public selectedSvrNo?: string,
-        public selectedTillNo?: string
+        public svrNo?: string,
+        public tillNo?: string
     ) {}
 }
