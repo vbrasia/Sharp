@@ -134,14 +134,11 @@
                     <thead class="m-0 p-0 bg-info text-white">
                         <tr class="m-0 p-0"> 
                             <th (click)="orderByHeader('department')"  class="m-0 p-0 pl-1">Department
-                                
                                 <span [hidden]="orderBy!='department'" >
                                     <i [ngClass]="isAsc ? 'fa fa-caret-up': 'fa fa-caret-down'" ></i>
                                 </span>
-                                
                             </th>
                             <th  (click)="orderByHeader('qty')" class="m-0 p-0 pl-1">Qty
-                                
                                 <span [hidden]="orderBy!='qty'" >
                                     <i [ngClass]="isAsc ? 'fa fa-caret-up': 'fa fa-caret-down'" ></i>
                                 </span>
@@ -151,8 +148,6 @@
                                     <i [ngClass]="isAsc ? 'fa fa-caret-up': 'fa fa-caret-down'" ></i>
                                 </span>
                             </th>
-                            <th  class="m-0 p-0 text-right">Srv No</th>
-                            <th  class="m-0 p-0 text-right">Till</th>
                         </tr>
                     </thead>
                     <tbody class="m-0 p-0">
@@ -165,12 +160,6 @@
                             </td>
                             <td class="m-0 p-0 text-right">
                                 {{line.amount.toFixed(2)}}
-                            </td>
-                            <td class="m-0 p-0 pl-1">
-                                {{line.srvNo}}
-                            </td>
-                            <td class="m-0 p-0 pl-1">
-                                {{line.till}}
                             </td>
                         </tr>
                         <tr class="m-0 p-0 text-success">
