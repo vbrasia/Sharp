@@ -32,12 +32,23 @@ namespace Sharp.Ado
             Sql+="on T.dptno=D.DptNo ";
             Sql+="where T.Amount <> 0 ";*/
 
-            string Sql="";
+            /*string Sql="";
             Sql+="select h.SrvNo,h.Till,i.dptno,sum(i.qty0) Qty,sum(i.qty0*i.Price) Amount,i.Description ";
             Sql+="from dbo.TranItems i,dbo.TranHeaders h ";
             Sql+="where i.TrnNo=h.TrnNo and h.DateTimeEnd between @SD and @ED ";
-            Sql+="group by h.SrvNo,h.Till,i.dptno,i.Description ";
-            
+            Sql+="group by h.SrvNo,h.Till,i.dptno,i.Description ";*/
+
+            string Sql="";
+            Sql+="declare @Depart Table ";
+            Sql+="(SrvNo int,Till int,dptno int,Qty decimal(10,2),Amount money) ";
+            Sql+="insert into @Depart ";
+            Sql+="select h.SrvNo,h.Till,i.dptno,sum(i.qty0) Qty,sum(i.qty0*i.Price) Amount ";
+            Sql+="from dbo.TranItems i,dbo.TranHeaders h ";
+            Sql+="where i.TrnNo=h.TrnNo and h.DateTimeEnd between @SD and @ED ";
+            Sql+="group by h.SrvNo,h.Till,i.dptno ";
+            Sql+="select T.SrvNo,T.Till,T.dptno,T.Qty,T.Amount,D.Name from @Depart T left join Depts D ";
+            Sql+="on T.dptno=D.DptNo ";
+            Sql+="where T.Amount <> 0 ";
 
             #endregion SQL
             #region Execute SQL
@@ -69,18 +80,12 @@ namespace Sharp.Ado
                             DepartmentDto d=new DepartmentDto();
                             //h.SrvNo,h.Till,i.dptno,sum(i.qty0) Qty,sum(i.qty0*i.Price) Amount,i.Description
                             #region Fill Model
-                           
                             try{d.SrvNo=reader.GetInt32(0);}catch{}
                             try{d.Till=reader.GetInt32(1);}catch{}
                             try{d.Id=reader.GetInt32(2);}catch{}
                             try{d.Qty=Convert.ToInt64(reader.GetDecimal(3));}catch{}
                             try{d.Amount=reader.GetDecimal(4);}catch{}
                             try{d.Department=reader.GetString(5).ToUpper();}catch{}
-                            
-                           /* try{d.Id=reader.GetInt32(0);}catch{}
-                            try{d.Department=reader.GetString(1).ToUpper();}catch{}
-                            try{d.Qty=reader.GetInt64(2);}catch{}
-                            try{d.Amount=reader.GetDecimal(3);}catch{}*/
                             #endregion Fill Model
                             lm.Add(d);
                         }
@@ -88,7 +93,7 @@ namespace Sharp.Ado
                 }
             }
             #endregion Execute SQL
-            return lm.OrderBy(x => x.Department).ToList<DepartmentDto>();
+            return lm;
         }
     }
 }

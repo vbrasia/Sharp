@@ -22,10 +22,12 @@ const departmentUrl = 'api/departments';
         endDate?: string;
         srvNos?: number[];
         tillNos?: number[];
+        grouped?: DepartmentDto[];
         constructor(private repo: Repository, private localStorage: LocalStorage, private report: Report, private router: Router) {
             if (!repo.selecttedStore) {
                 this.router.navigateByUrl('/admin/stores');
             } else {
+                this.grouped = new Array();
                 if (!this.report.departmentSalesPeriod.initiated) {
                     this.getPeriod().subscribe(response => {
                         if (response) {
@@ -48,6 +50,7 @@ const departmentUrl = 'api/departments';
                 this.endDate = this.report.departmentSalesPeriod.endDate;
                 this.getSrvNos();
                 this.getTillNos();
+                this.getGroupByDepartment();
                 this.getCharts();
             }
         }
@@ -167,6 +170,7 @@ const departmentUrl = 'api/departments';
                     this.report.departmentsSales = response;
                     this.getSrvNos();
                     this.getTillNos();
+                    this.getGroupByDepartment();
                     this.getCharts();
                     this.repo.apiBusy = false;
                 });
@@ -187,22 +191,6 @@ const departmentUrl = 'api/departments';
                 return 0;
             }
         }
-        get filteredDepartmentSales():  DepartmentDto[] {
-            const srvNo = this.chosenSrvNo;
-            const till = this.chosenTillNo;
-            if (srvNo === '0' && till === '0') {
-                return this.report.departmentsSales;
-            } else if (srvNo === '0' && till !== '0') {
-               return this.report.departmentsSales.filter(x => (x.till === Number(till)));
-            } else if (srvNo !== '0' && till === '0') {
-                return this.report.departmentsSales.filter(x => (x.srvNo === Number(srvNo)));
-            } else {
-                return this.report.departmentsSales.filter(x => (x.srvNo === Number(srvNo) && x.till === Number(till)));
-            }
-
-
-        }
-
         getSrvNos() {
             this.srvNos = this.report.departmentsSales.map(u => u.srvNo).filter( (value, index, self) => {
                 return self.indexOf(value) === index;
@@ -224,10 +212,19 @@ const departmentUrl = 'api/departments';
         selectedSrvNo(filterVal: string) {
             if (this.report.departmentSalesPeriod.selectedSvrNo !== filterVal) {
                 this.report.departmentSalesPeriod.selectedSvrNo = filterVal;
+                this.getGroupByDepartment();
+                this.getCharts();
             }
             this.savePeriod(this.report.departmentSalesPeriod);
         }
-
+        set chosenSrvNo(filterVal: string) {
+            if (this.report.departmentSalesPeriod.selectedSvrNo !== filterVal) {
+                this.report.departmentSalesPeriod.selectedSvrNo = filterVal;
+                this.getGroupByDepartment();
+                this.getCharts();
+            }
+            this.savePeriod(this.report.departmentSalesPeriod);
+        }
         get chosenSrvNo(): string {
             return this.report.departmentSalesPeriod.selectedSvrNo;
         }
@@ -239,44 +236,79 @@ const departmentUrl = 'api/departments';
         selecteTillNo(filterVal: string) {
             if (this.report.departmentSalesPeriod.selectedTillNo !== filterVal) {
                 this.report.departmentSalesPeriod.selectedTillNo = filterVal;
+                this.getGroupByDepartment();
+                this.getCharts();
             }
             this.savePeriod(this.report.departmentSalesPeriod);
         }
-
+        get filteredDepartmentSales():  DepartmentDto[] {
+            if (this.report.departmentsSales) {
+                const srvNo = Number(this.chosenSrvNo);
+                const till = Number(this.chosenTillNo);
+                if (srvNo === 0 && till === 0) {
+                    return this.report.departmentsSales;
+                } else if (srvNo === 0 && till !== 0) {
+                return this.report.departmentsSales.filter(x => (x.till === till));
+                } else if (srvNo !== 0 && till === 0) {
+                    return this.report.departmentsSales.filter(x => (x.srvNo === srvNo));
+                } else {
+                    return this.report.departmentsSales.filter(x => (x.srvNo === srvNo && x.till === till));
+                }
+            }
+        }
+        getGroupByDepartment() {
+            if (this.filteredDepartmentSales) {
+                this.grouped.length = 0;
+                this.filteredDepartmentSales.forEach(element => {
+                    const deptno = element.id;
+                    const filterGrouped = this.grouped.filter(x => x.id === deptno);
+                    if (filterGrouped.length > 0) {
+                        const ele = this.grouped.filter(x => x.id === deptno)[0];
+                        const index = this.grouped.indexOf(ele);
+                        this.grouped[index].amount = this.grouped[index].amount +  element.amount;
+                        this.grouped[index].qty =  this.grouped[index].qty +  element.qty;
+                    } else {
+                        this.grouped.push(element);
+                    }
+                });
+            }
+        }
         get departmentSales(): DepartmentDto[] {
-          if (this.orderBy === 'department') {
-                if (this.isAsc) {
-                    return this.filteredDepartmentSales.sort((a , b) => {
-                        return a.department.localeCompare(b.department);
-                    });
-                } else {
-                    return  this.filteredDepartmentSales.sort((a , b) => {
-                        return b.department.localeCompare(a.department);
-                    });
-                }
-            } else if (this.orderBy === 'qty') {
-                if (this.isAsc) {
-                    return  this.filteredDepartmentSales.sort((a , b) => {
-                        const qtyDiff =  a.qty - b.qty;
-                        if ( qtyDiff ) {return qtyDiff; }
-                    });
-                } else {
-                    return  this.filteredDepartmentSales.sort((a , b) => {
-                        const qtyDiff =  b.qty - a.qty;
-                        if ( qtyDiff ) {return qtyDiff; }
-                    });
-                }
-            } else if ((this.orderBy === 'amount')) {
-                if (this.isAsc) {
-                    return  this.filteredDepartmentSales.sort((a , b) => {
-                        const amtDiff =  a.amount - b.amount;
-                        if ( amtDiff ) {return amtDiff; }
-                    });
-                } else {
-                    return  this.filteredDepartmentSales.sort((a , b) => {
-                        const amtDiff =  b.amount - a.amount;
-                        if ( amtDiff ) {return amtDiff; }
-                    });
+            if (this.grouped) {
+                if (this.orderBy === 'department') {
+                    if (this.isAsc) {
+                        return this.grouped.sort((a , b) => {
+                            return a.department.localeCompare(b.department);
+                        });
+                    } else {
+                        return this.grouped.sort((a , b) => {
+                            return b.department.localeCompare(a.department);
+                        });
+                    }
+                } else if (this.orderBy === 'qty') {
+                    if (this.isAsc) {
+                        return this.grouped.sort((a , b) => {
+                            const qtyDiff =  a.qty - b.qty;
+                            if ( qtyDiff ) {return qtyDiff; }
+                        });
+                    } else {
+                        return this.grouped.sort((a , b) => {
+                            const qtyDiff =  b.qty - a.qty;
+                            if ( qtyDiff ) {return qtyDiff; }
+                        });
+                    }
+                } else if ((this.orderBy === 'amount')) {
+                    if (this.isAsc) {
+                        return this.grouped.sort((a , b) => {
+                            const amtDiff =  a.amount - b.amount;
+                            if ( amtDiff ) {return amtDiff; }
+                        });
+                    } else {
+                        return this.grouped.sort((a , b) => {
+                            const amtDiff =  b.amount - a.amount;
+                            if ( amtDiff ) {return amtDiff; }
+                        });
+                    }
                 }
             }
         }

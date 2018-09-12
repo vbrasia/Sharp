@@ -30,7 +30,7 @@
     </div>   
     <div class="col-md-12">
         <label>Srv No: </label>
-        <select (change)="selectedSrvNo($event.target.value)" [(ngModel)]="chosenSrvNo">
+        <select  [(ngModel)]="chosenSrvNo">
             <option value="0">--All--</option>
             <option *ngFor="let value of srvNos" value={{value}} >
                 {{value}}
