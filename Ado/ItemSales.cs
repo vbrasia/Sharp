@@ -18,20 +18,7 @@ namespace Sharp.Ado
 
             List<ItemDto> lm=new List<ItemDto>();
             #region SQL
-          /*  string Sql= "declare @Items Table ";
-            Sql +="([Description] varchar(40),dptno int,qty int, Amount money) ";
-            Sql +="insert into @Items ";
-            Sql +="select [Description],dptno,sum(qty0),sum(qty0*Price) from dbo.TranItems ";
-            Sql +="where TrnNo in( ";
-            Sql +="select TrnNo from TranHeaders ";
-            Sql +="where DateTimeEnd between @SD  and @ED) and voidd =0 ";
-            Sql +="group by dptno,[Description] ";
-
-            Sql +="select T.dptno,D.Name,T.[Description],T.qty,T.Amount from @Items T left join Depts D ";
-            Sql +="on T.dptno=D.DptNo ";
-            Sql +="where T.Amount <>0 ";
-            Sql +="order by D.Name,T.[Description] ";*/
-
+          
             string Sql="declare @Item Table ";
             Sql +="(SrvNo int,Till int,dptno int,[Description] varchar(40),Qty decimal(10,2),Amount money) ";
             Sql +="insert into @Item ";
@@ -43,7 +30,6 @@ namespace Sharp.Ado
             Sql +="on T.dptno=D.DptNo ";
             Sql +="where T.Amount <> 0 ";
             Sql +="order by D.Name,T.[Description] ";
-
 
             #endregion SQL
              #region Execute SQL
@@ -72,7 +58,6 @@ namespace Sharp.Ado
                     {
                         while(reader.Read())
                         {
-                            //T.SrvNo,T.Till,T.dptno,T.Qty,T.Amount,D.Name,T.[Description]
                             ItemDto d=new ItemDto();
                             #region Fill Model
                             try{d.SrvNo=reader.GetInt32(0);}catch{}

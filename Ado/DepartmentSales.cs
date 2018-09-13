@@ -20,24 +20,6 @@ namespace Sharp.Ado
             List<DepartmentDto> lm=new List<DepartmentDto>();
             #region SQL
 
-           /* string Sql="declare @Depart Table ";
-            Sql+="(dptno int,qty bigint,Amount money) ";
-            Sql+="insert into @Depart ";
-            Sql+="select dptno,sum(qty0),sum(qty0*Price) from dbo.TranItems ";
-            Sql+="where TrnNo in( ";
-            Sql+="select TrnNo from TranHeaders ";
-            Sql+="where DateTimeEnd between @SD  and @ED) and voidd =0 ";
-            Sql+="group by dptno ";
-            Sql+="select T.dptno,D.Name,T.qty,T.Amount from @Depart T left join Depts D ";
-            Sql+="on T.dptno=D.DptNo ";
-            Sql+="where T.Amount <> 0 ";*/
-
-            /*string Sql="";
-            Sql+="select h.SrvNo,h.Till,i.dptno,sum(i.qty0) Qty,sum(i.qty0*i.Price) Amount,i.Description ";
-            Sql+="from dbo.TranItems i,dbo.TranHeaders h ";
-            Sql+="where i.TrnNo=h.TrnNo and h.DateTimeEnd between @SD and @ED ";
-            Sql+="group by h.SrvNo,h.Till,i.dptno,i.Description ";*/
-
             string Sql="";
             Sql+="declare @Depart Table ";
             Sql+="(SrvNo int,Till int,dptno int,Qty decimal(10,2),Amount money) ";
@@ -78,7 +60,6 @@ namespace Sharp.Ado
                         while(reader.Read())
                         {
                             DepartmentDto d=new DepartmentDto();
-                            //h.SrvNo,h.Till,i.dptno,sum(i.qty0) Qty,sum(i.qty0*i.Price) Amount,i.Description
                             #region Fill Model
                             try{d.SrvNo=reader.GetInt32(0);}catch{}
                             try{d.Till=reader.GetInt32(1);}catch{}

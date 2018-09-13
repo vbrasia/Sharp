@@ -58,21 +58,28 @@
     </div>
 </div>
 <div class="row my-1">
-    <label>srv no</label>
-    <select class="border border-primary" [(ngModel)]="chosenSrvNo">
-            <option value="0">All</option>
-            <option *ngFor="let value of srvNos" value={{value}}>
-                {{value}}
-            </option>
-    </select>
-
-    <label>Till no</label>
-    <select class="border border-primary"  [(ngModel)]="chosenTillNo">
-        <option value="0">All</option>
-        <option *ngFor="let value of tillNos" value={{value}} >
-            {{value}}
-        </option>
-    </select>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 mr-0 pr-0">
+        <div class="input-group input-group-sm  m-0 p-0">
+            <div class="input-group-prepend">
+                <span class="border border-primary input-group-text" id="">Srv No</span>
+            </div>
+            <select class="border border-primary"  [(ngModel)]="chosenSrvNo">
+                    <option value="0">All</option>
+                    <option *ngFor="let value of srvNos" value={{value}} >
+                        {{value}}
+                    </option>
+            </select>
+            <div class="input-group-prepend ml-2">
+                <span class="border border-primary input-group-text" id="">Till No</span>
+            </div>
+            <select class="border border-primary"  [(ngModel)]="chosenTillNo">
+                    <option value="0">All</option>
+                    <option *ngFor="let value of tillNos" value={{value}} >
+                        {{value}}
+                    </option>
+            </select>
+        </div>
+    </div>
 </div>
 
 <div class="row my-1">
@@ -142,8 +149,6 @@
                                     <i [ngClass]="isAsc ? 'fa fa-caret-up': 'fa fa-caret-down'" ></i>
                                 </span>
                             </th>
-                            <th>srv</th>
-                            <th>till</th>
                         </tr>
                     </thead>
                     <tbody class="m-0 p-0">
@@ -156,12 +161,6 @@
                             </td>
                             <td class="m-0 p-0 text-right">
                                 {{line.amount.toFixed(2)}}
-                            </td>
-                            <td class="m-0 p-0 text-right">
-                                    {{line.srvNo}}
-                            </td>
-                            <td class="m-0 p-0 text-right">
-                                    {{line.tillNo}}
                             </td>
                         </tr>
                         <tr class="m-0 p-0 text-success">

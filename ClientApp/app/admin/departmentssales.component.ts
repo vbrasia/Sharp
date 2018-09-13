@@ -182,7 +182,6 @@ const departmentUrl = 'api/departments';
             } else {
                 return 0;
             }
-
         }
         getTotalQty(): number {
             if ((this.departmentSales) && (this.departmentSales.length > 0)) {

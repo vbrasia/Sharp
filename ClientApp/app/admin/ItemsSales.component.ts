@@ -199,7 +199,6 @@ const itemUrl = 'api/items';
             } else {
                 return 0;
             }
-
         }
         getSrvNos() {
             this.srvNos = this.report.itemsSales.map(u => u.srvNo).filter( (value, index, self) => {
@@ -309,11 +308,6 @@ const itemUrl = 'api/items';
                 }
             }
         }
-
-           /* return this.report.itemsSales.sort((a , b) => {
-                const amtDiff =  b.amount - a.amount;
-                if ( amtDiff ) {return amtDiff; }
-            });*/
         }
         setPeriod(tag?: string) {
             if (tag !== this.report.itemSalesPeriod.periodName) {
