@@ -13,7 +13,7 @@ namespace Sharp.Ado
         }
         public List<DepartmentDto> GetDepartmentSales(StoreDto m)
         {
-            DepartmentSales ob=new DepartmentSales();
+            DepartmentSales ob=new DepartmentSales(); 
             List<Store> stores=Context.Stores.Where(x=>x.Id==m.Id).ToList<Store>();
             if(stores.Count>0)
             {
@@ -82,6 +82,18 @@ namespace Sharp.Ado
                 m.DataBase=stores[0].DataBase;
             }
             return ob.GetRefundTransactions(m);
+        }
+        public List<ServerDto> GetServers(StoreDto m)
+        {
+            Servers ob = new Servers();
+            List<Store> stores=Context.Stores.Where(x=>x.Id==m.Id).ToList<Store>();
+            if(stores.Count>0)
+            {
+                m.PublicIp=stores[0].PublicIp;
+                m.Port=stores[0].Port;
+                m.DataBase=stores[0].DataBase;
+            }
+            return ob.GetServers(m);
         }
     }
 }

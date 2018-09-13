@@ -13,10 +13,12 @@ import {UserStore} from './userStore.model';
 import {Authorization} from './authorization.model';
 import {StoreDto} from './storeDto.model';
 import {DepartmentDto} from './departmentDto.model';
+import { ServerDto } from './serverDto.model';
 
 const storesUrl = '/api/stores';
 const usersUrl = '/api/users';
 const authorizationUrl = '/api/authorizations';
+const serversUrl = 'api/servers';
 
 @Injectable()
 export class Repository {
@@ -31,6 +33,7 @@ export class Repository {
     private loggedInUserRole?: string;
     storeDto?: StoreDto;
     screenWidth?: number;
+    servers?: ServerDto[];
     constructor(private http: Http, private localStorage: LocalStorage, private router: Router) {
         this.reLogin = false;
         this.apiBusy = false;
@@ -72,6 +75,12 @@ export class Repository {
                 throw new Error(errorResponse.toString());
             });
         }
+    public getServers() {
+        this.sendRequest(RequestMethod.Post, serversUrl, this.storeDto)
+        .subscribe(response => {
+            this.servers = response;
+        });
+    }
     public getStores() {
         const url = storesUrl + '/' + this.logedinUser;
         this.sendRequest(RequestMethod.Get, url)
@@ -113,6 +122,10 @@ export class Repository {
         this.storeDto.serialNumber =  this.selecttedStore.serialNumber;
         this.storeDto.macAddress = this.selecttedStore.macAddress;
         this.storeDto.tick = this.selecttedStore.tick;
+
+        if (this.selecttedStore) {
+            this.getServers();
+        }
 
         if (this.selecttedStore) {
             const url = usersUrl + '?' + 'storeId=' + this.selecttedStore.storeId;

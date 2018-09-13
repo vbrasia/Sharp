@@ -5,6 +5,8 @@ import {Period} from '../models/period.model';
 import { DailySalesDto } from '../models/dailySalesDto.model';
 import { Transactions } from '../models/transactions.model';
 import { TransactionHeaders } from '../models/transactionHeaders.model';
+import { ServerDto} from '../models/serverDto.model';
+
 @Injectable()
 export class Report {
     departmentSalesPeriod?: Period;
@@ -27,6 +29,8 @@ export class Report {
     refundTransactionsPeriod?: Period;
     refundTransactions?: Transactions;
     refundSelectedHeader?: TransactionHeaders;
+
+    servers?: ServerDto[];
 
     constructor() {
         const d = new Date(Date.now());
@@ -54,6 +58,8 @@ export class Report {
         this.itemSalesPeriod.svrNo = '0';
         this.itemSalesPeriod.tillNo = '0';
         this.itemsSales = [];
+
+        this.servers = [];
 
         this.transactionsPeriod = new Period();
         this.transactionsPeriod.startDate = ds;
