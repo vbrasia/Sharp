@@ -17,19 +17,6 @@ namespace Sharp.Ado
             string EndDate=m.EndDate;
             List<DailySalesDto> lm=new List<DailySalesDto>();
             #region SQL
-            /*string Sql = "declare @S Table ";
-            Sql +="(TrnNo bigint,Amount money,DayDate varchar(20),[DayName] varchar(50)) ";
-            Sql +="insert into @S ";
-            Sql +="select I.TrnNo,sum(I.qty0*I.price) Amount,H.Dt,DATENAME(dw,H.Dt) [DayName] from TranItems I left join ( ";
-            Sql +="select TrnNo,DateTimeEnd, CONVERT(date, DateTimeEnd) Dt from dbo.TranHeaders) as H ";
-            Sql +="on I.TrnNo=H.TrnNo ";
-            Sql +="where I.voidd=0 and DateTimeEnd between @Sd and @Ed ";
-            Sql +="group by I.TrnNo,H.Dt ";
-            Sql +="order by H.Dt ";
-            Sql +="select DayDate,[DayName],SUM(Amount) Amount, COUNT(TrnNo) Trns from @S ";
-            Sql +="group by DayDate,[DayName] ";
-            Sql +="order by DayDate ";*/ 
-
             string Sql="declare @S Table ";
             Sql +="(TrnNo bigint,Amount money,DayDate varchar(20),[DayName] varchar(50),SrvNo int , TillNo int) ";
             Sql +="insert into @S ";
