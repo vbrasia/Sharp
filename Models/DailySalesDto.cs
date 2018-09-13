@@ -6,5 +6,7 @@ namespace Sharp.Models
         public string DayName{get;set;}="";
         public decimal Amount{get;set;}
         public int Trans{get;set;}
+        public int SrvNo {get;set;}
+        public int TillNo {get;set;}
     }
 }

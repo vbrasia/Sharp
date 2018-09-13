@@ -20,10 +20,14 @@ export class DailySalesComponent implements OnInit {
     PieChart: any;
     startDate?: string;
     endDate?: string;
+    srvNos?: number[];
+    tillNos?: number[];
+    grouped?: DailySalesDto[];
     constructor(private repo: Repository, private localStorage: LocalStorage, private report: Report, private router: Router) {
         if (!repo.selecttedStore) {
             this.router.navigateByUrl('/admin/stores');
         } else {
+            this.grouped = new Array();
             if (!this.report.dailySalesPeriod.initiated) {
                 this.getPeriod().subscribe(response => {
                     if (response) {
@@ -44,20 +48,26 @@ export class DailySalesComponent implements OnInit {
         if (( this.report.dailySalesPeriod.startDate) && ( this.report.dailySalesPeriod.endDate)) {
             this.startDate = this.report.dailySalesPeriod.startDate;
             this.endDate = this.report.dailySalesPeriod.endDate;
-            if (!this.BarChart) {
-                this.getBarChart();
-            } else {
-                this.removeData(this.BarChart);
-                this.addData(this.BarChart, this.chartLabels,
-                this.dailySales.map(x => x.amount));
-            }
-            if (!this.PieChart) {
-                this.getPieChart();
-            } else {
-                this.removeData(this.PieChart);
-                this.addData(this.PieChart, this.chartLabels,
-                this.dailySales.map(x => x.amount));
-            }
+            this.getSrvNos();
+            this.getTillNos();
+            this.getGroupByDate();
+            this.getCharts();
+        }
+    }
+    private getCharts() {
+        if (!this.BarChart) {
+            this.getBarChart();
+        } else {
+            this.removeData(this.BarChart);
+            this.addData(this.BarChart, this.chartLabels,
+            this.dailySales.map(x => x.amount));
+        }
+        if (!this.PieChart) {
+            this.getPieChart();
+        } else {
+            this.removeData(this.PieChart);
+            this.addData(this.PieChart, this.chartLabels,
+            this.dailySales.map(x => x.amount));
         }
     }
     get screenWidth(): number {
@@ -151,20 +161,10 @@ export class DailySalesComponent implements OnInit {
             this.savePeriod(this.report.dailySalesPeriod);
             this.repo.sendRequest(RequestMethod.Post, url, this.repo.storeDto).subscribe(response => {
                 this.report.dailySales = response;
-                if (!this.BarChart) {
-                    this.getBarChart();
-                } else {
-                    this.removeData(this.BarChart);
-                    this.addData(this.BarChart, this.chartLabels,
-                    this.dailySales.map(x => x.amount));
-                }
-                if (!this.PieChart) {
-                    this.getPieChart();
-                } else {
-                    this.removeData(this.PieChart);
-                    this.addData(this.PieChart, this.chartLabels,
-                    this.dailySales.map(x => x.amount));
-                }
+                this.getSrvNos();
+                this.getTillNos();
+                this.getGroupByDate();
+                this.getCharts();
                 this.repo.apiBusy = false;
             });
         }
@@ -183,8 +183,81 @@ export class DailySalesComponent implements OnInit {
             return 0;
         }
     }
+    getSrvNos() {
+        this.srvNos = this.report.dailySales.map(u => u.srvNo).filter( (value, index, self) => {
+            return self.indexOf(value) === index;
+        } ).sort((a, b ) => {
+            const diff = a - b;
+            if (diff) {return diff; }
+        });
+    }
+
+    getTillNos() {
+        this.tillNos = this.report.dailySales.map(u => u.tillNo).filter( (value, index, self) => {
+            return self.indexOf(value) === index;
+        } ).sort((a, b) => {
+            const diff = a - b;
+            if (diff) { return diff ; }
+        });
+    }
+    set chosenSrvNo(filterVal: string) {
+        if (this.report.dailySalesPeriod.svrNo !== filterVal) {
+            this.report.dailySalesPeriod.svrNo = filterVal;
+            this.getGroupByDate();
+            this.getCharts();
+        }
+        this.savePeriod(this.report.dailySalesPeriod);
+    }
+    get chosenSrvNo(): string {
+        return this.report.dailySalesPeriod.svrNo;
+    }
+    set chosenTillNo(filterVal: string) {
+        if (this.report.dailySalesPeriod.tillNo !== filterVal) {
+            this.report.dailySalesPeriod.tillNo = filterVal;
+            this.getGroupByDate();
+            this.getCharts();
+        }
+        this.savePeriod(this.report.dailySalesPeriod);
+    }
+    get chosenTillNo(): string {
+        return this.report.dailySalesPeriod.tillNo;
+    }
+    get filteredDailySales():  DailySalesDto[] {
+        if (this.report.dailySales) {
+            const srvNo = Number(this.chosenSrvNo);
+            const till = Number(this.chosenTillNo);
+            if (srvNo === 0 && till === 0) {
+                return this.report.dailySales;
+            } else if (srvNo === 0 && till !== 0) {
+            return this.report.dailySales.filter(x => (x.tillNo === till));
+            } else if (srvNo !== 0 && till === 0) {
+                return this.report.dailySales.filter(x => (x.srvNo === srvNo));
+            } else {
+                return this.report.dailySales.filter(x => (x.srvNo === srvNo && x.tillNo === till));
+            }
+        }
+    }
+    getGroupByDate() {
+        if (this.filteredDailySales) {
+            this.grouped.length = 0;
+            this.filteredDailySales.forEach(element => {
+                const dayDate = element.dayDate;
+                const filterGrouped = this.grouped.filter(x => x.dayDate === dayDate);
+                if (filterGrouped.length > 0) {
+                    const ele = this.grouped.filter(x => x.dayDate === dayDate)[0];
+                    const index = this.grouped.indexOf(ele);
+                    this.grouped[index].amount = this.grouped[index].amount +  element.amount;
+                    this.grouped[index].trans =  this.grouped[index].trans +  element.trans;
+                } else {
+                    this.grouped.push(element);
+                }
+            });
+        }
+    }
     get dailySales(): DailySalesDto[] {
-        return this.report.dailySales;
+        if (this.grouped) {
+            return this.grouped;
+        }
     }
     get chartLabels() {
         const label = [];

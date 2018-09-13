@@ -17,7 +17,7 @@ namespace Sharp.Ado
             string EndDate=m.EndDate;
             List<DailySalesDto> lm=new List<DailySalesDto>();
             #region SQL
-            string Sql = "declare @S Table ";
+            /*string Sql = "declare @S Table ";
             Sql +="(TrnNo bigint,Amount money,DayDate varchar(20),[DayName] varchar(50)) ";
             Sql +="insert into @S ";
             Sql +="select I.TrnNo,sum(I.qty0*I.price) Amount,H.Dt,DATENAME(dw,H.Dt) [DayName] from TranItems I left join ( ";
@@ -28,7 +28,21 @@ namespace Sharp.Ado
             Sql +="order by H.Dt ";
             Sql +="select DayDate,[DayName],SUM(Amount) Amount, COUNT(TrnNo) Trns from @S ";
             Sql +="group by DayDate,[DayName] ";
+            Sql +="order by DayDate ";*/ 
+
+            string Sql="declare @S Table ";
+            Sql +="(TrnNo bigint,Amount money,DayDate varchar(20),[DayName] varchar(50),SrvNo int , TillNo int) ";
+            Sql +="insert into @S ";
+            Sql +="select I.TrnNo,sum(I.qty0*I.price) Amount,H.Dt,DATENAME(dw,H.Dt) [DayName],H.SrvNo,H.Till from TranItems I left join ( ";
+            Sql +="select TrnNo,DateTimeEnd, CONVERT(date, DateTimeEnd) Dt,SrvNo,Till from dbo.TranHeaders) as H ";
+            Sql +="on I.TrnNo=H.TrnNo ";
+            Sql +="where I.voidd=0 and DateTimeEnd between '2018-09-02' and '2018-09-11' ";
+            Sql +="group by I.TrnNo,H.Dt,H.SrvNo,H.Till ";
+            Sql +="order by H.Dt ";
+            Sql +="select DayDate,[DayName],SUM(Amount) Amount, COUNT(TrnNo) Trns, SrvNo ,TillNo from @S ";
+            Sql +="group by DayDate,[DayName],SrvNo,TillNo ";
             Sql +="order by DayDate ";
+            
             #endregion SQL
             #region Execute SQL
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -63,6 +77,8 @@ namespace Sharp.Ado
                             try{d.DayName=reader.GetString(1);}catch{}
                             try{d.Amount=reader.GetDecimal(2);}catch{}
                             try{d.Trans=reader.GetInt32(3);}catch{}
+                            try{d.SrvNo=reader.GetInt32(4);}catch{}
+                            try{d.TillNo=reader.GetInt32(5);}catch{}
                             #endregion Fill Model
                             lm.Add(d);
                         }
