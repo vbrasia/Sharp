@@ -21,10 +21,14 @@ const itemUrl = 'api/items';
         PieChart: any;
         startDate?: string;
         endDate?: string;
+        srvNos?: number[];
+        tillNos?: number[];
+        grouped?: ItemDto[];
         constructor(private repo: Repository, private localStorage: LocalStorage, private report: Report, private router: Router) {
             if (!repo.selecttedStore) {
                 this.router.navigateByUrl('/admin/stores');
             } else {
+                this.grouped = new Array();
                 if (!this.report.itemSalesPeriod.initiated) {
                     this.getPeriod().subscribe(response => {
                         if (response) {
@@ -45,20 +49,26 @@ const itemUrl = 'api/items';
             if (( this.report.itemSalesPeriod.startDate) && ( this.report.itemSalesPeriod.endDate)) {
                 this.startDate = this.report.itemSalesPeriod.startDate;
                 this.endDate = this.report.itemSalesPeriod.endDate;
-                if (!this.BarChart) {
-                    this.getBarChart();
-                } else {
-                    this.removeData(this.BarChart);
-                    this.addData(this.BarChart, this.gettop20().map(x => x.description),
-                    this.gettop20().map(x => x.amount));
-                }
-                if (!this.PieChart) {
-                    this.getPieChart();
-                } else {
-                    this.removeData(this.PieChart);
-                    this.addData(this.PieChart, this.gettop20().map(x => x.description),
-                    this.gettop20().map(x => x.amount));
-                }
+                this.getSrvNos();
+                this.getTillNos();
+                this.getGroupByItem();
+                this.getCharts();
+            }
+        }
+        private getCharts() {
+            if (!this.BarChart) {
+                this.getBarChart();
+            } else {
+                this.removeData(this.BarChart);
+                this.addData(this.BarChart, this.gettop20().map(x => x.description),
+                this.gettop20().map(x => x.amount));
+            }
+            if (!this.PieChart) {
+                this.getPieChart();
+            } else {
+                this.removeData(this.PieChart);
+                this.addData(this.PieChart, this.gettop20().map(x => x.description),
+                this.gettop20().map(x => x.amount));
             }
         }
         get screenWidth(): number {
@@ -142,16 +152,16 @@ const itemUrl = 'api/items';
             chart.update();
         }
         gettop20(): ItemDto[] {
-            if (this.report.itemsSales.length < 2) {
-                return this.report.itemsSales;
+            if (this.grouped.length < 2) {
+                return this.grouped;
             } else
-            if (this.report.itemsSales.length <= 20) {
-                return this.report.itemsSales.sort((a , b) => {
+            if (this.grouped.length <= 20) {
+                return this.grouped.sort((a , b) => {
                     const amtDiff =  b.amount - a.amount;
                     if ( amtDiff ) {return amtDiff; }
                 });
             } else {
-                return this.report.itemsSales.sort((a , b) => {
+                return this.grouped.sort((a , b) => {
                     const amtDiff =  b.amount - a.amount;
                     if ( amtDiff ) {return amtDiff; }
                 }).slice(0, 20);
@@ -168,75 +178,137 @@ const itemUrl = 'api/items';
                 this.savePeriod(this.report.itemSalesPeriod);
                 this.repo.sendRequest(RequestMethod.Post, url, this.repo.storeDto).subscribe(response => {
                     this.report.itemsSales = response;
-                    if (!this.BarChart) {
-                        this.getBarChart();
-                    } else {
-                        this.removeData(this.BarChart);
-                        this.addData(this.BarChart, this.gettop20().map(x => x.description),
-                        this.gettop20().map(x => x.amount));
-                    }
-                    if (!this.PieChart) {
-                        this.getPieChart();
-                    } else {
-                        this.removeData(this.PieChart);
-                        this.addData(this.PieChart, this.gettop20().map(x => x.description),
-                        this.gettop20().map(x => x.amount));
-                    }
+                    this.getSrvNos();
+                    this.getTillNos();
+                    this.getGroupByItem();
+                    this.getCharts();
                     this.repo.apiBusy = false;
                 });
             }
         }
         getTotalQty(): number {
-            if ((this.report.itemsSales) && (this.report.itemsSales.length > 0)) {
-                return this.report.itemsSales.map(x => x.quantity).reduce((s, u) => s + u + 0);
+            if ((this.itemSales) && (this.itemSales.length > 0)) {
+                return this.itemSales.map(x => x.quantity).reduce((s, u) => s + u + 0);
             } else {
                 return 0;
             }
         }
         getTotalAmount(): number {
-            if ((this.report.itemsSales) && (this.report.itemsSales.length > 0)) {
-                return this.report.itemsSales.map(x => x.amount).reduce((s, u) => s + u + 0);
+            if ((this.itemSales) && (this.itemSales.length > 0)) {
+                return this.itemSales.map(x => x.amount).reduce((s, u) => s + u + 0);
             } else {
                 return 0;
             }
 
         }
+        getSrvNos() {
+            this.srvNos = this.report.itemsSales.map(u => u.srvNo).filter( (value, index, self) => {
+                return self.indexOf(value) === index;
+            } ).sort((a, b ) => {
+                const diff = a - b;
+                if (diff) {return diff; }
+            });
+        }
+        getTillNos() {
+            this.tillNos = this.report.itemsSales.map(u => u.tillNo).filter( (value, index, self) => {
+                return self.indexOf(value) === index;
+            } ).sort((a, b) => {
+                const diff = a - b;
+                if (diff) { return diff ; }
+            });
+        }
+        set chosenTillNo(filterVal: string) {
+            if (this.report.itemSalesPeriod.tillNo !== filterVal) {
+                this.report.itemSalesPeriod.tillNo = filterVal;
+                this.getGroupByItem();
+                this.getCharts();
+            }
+            this.savePeriod(this.report.itemSalesPeriod);
+        }
+        get chosenTillNo(): string {
+            return this.report.itemSalesPeriod.tillNo;
+        }
+        set chosenSrvNo(filterVal: string) {
+            if (this.report.itemSalesPeriod.svrNo !== filterVal) {
+                this.report.itemSalesPeriod.svrNo = filterVal;
+                this.getGroupByItem();
+                this.getCharts();
+            }
+            this.savePeriod(this.report.itemSalesPeriod);
+        }
+        get chosenSrvNo(): string {
+            return this.report.itemSalesPeriod.svrNo;
+        }
+        get filteredItemSales():  ItemDto[] {
+            if (this.report.itemsSales) {
+                const srvNo = Number(this.chosenSrvNo);
+                const till = Number(this.chosenTillNo);
+                if (srvNo === 0 && till === 0) {
+                    return this.report.itemsSales;
+                } else if (srvNo === 0 && till !== 0) {
+                return this.report.itemsSales.filter(x => (x.tillNo === till));
+                } else if (srvNo !== 0 && till === 0) {
+                    return this.report.itemsSales.filter(x => (x.srvNo === srvNo));
+                } else {
+                    return this.report.itemsSales.filter(x => (x.srvNo === srvNo && x.tillNo === till));
+                }
+            }
+        }
+        getGroupByItem() {
+            if (this.filteredItemSales) {
+                this.grouped.length = 0;
+                this.filteredItemSales.forEach(element => {
+                    const item = element.description;
+                    const filterGrouped = this.grouped.filter(x => x.description === item);
+                    if (filterGrouped.length > 0) {
+                        const ele = this.grouped.filter(x => x.description === item)[0];
+                        const index = this.grouped.indexOf(ele);
+                        this.grouped[index].amount = this.grouped[index].amount +  element.amount;
+                        this.grouped[index].quantity =  this.grouped[index].quantity +  element.quantity;
+                    } else {
+                        this.grouped.push(element);
+                    }
+                });
+            }
+        }
         get itemSales(): ItemDto[] {
+            if (this.grouped) {
             if (this.orderBy === 'product') {
                 if (this.isAsc) {
-                    return this.report.itemsSales.sort((a , b) => {
+                    return this.grouped.sort((a , b) => {
                         return a.description.localeCompare(b.description);
                     });
                 } else {
-                    return this.report.itemsSales.sort((a , b) => {
+                    return this.grouped.sort((a , b) => {
                         return b.description.localeCompare(a.description);
                     });
                 }
             } else if (this.orderBy === 'qty') {
                 if (this.isAsc) {
-                    return this.report.itemsSales.sort((a , b) => {
+                    return this.grouped.sort((a , b) => {
                         const qtyDiff =  a.quantity - b.quantity;
                         if ( qtyDiff ) {return qtyDiff; }
                     });
                 } else {
-                    return this.report.itemsSales.sort((a , b) => {
+                    return this.grouped.sort((a , b) => {
                         const qtyDiff =  b.quantity - a.quantity;
                         if ( qtyDiff ) {return qtyDiff; }
                     });
                 }
             } else if ((this.orderBy === 'amount')) {
                 if (this.isAsc) {
-                    return this.report.itemsSales.sort((a , b) => {
+                    return this.grouped.sort((a , b) => {
                         const amtDiff =  a.amount - b.amount;
                         if ( amtDiff ) {return amtDiff; }
                     });
                 } else {
-                    return this.report.itemsSales.sort((a , b) => {
+                    return this.grouped.sort((a , b) => {
                         const amtDiff =  b.amount - a.amount;
                         if ( amtDiff ) {return amtDiff; }
                     });
                 }
             }
+        }
 
            /* return this.report.itemsSales.sort((a , b) => {
                 const amtDiff =  b.amount - a.amount;

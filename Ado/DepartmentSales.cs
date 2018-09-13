@@ -83,7 +83,7 @@ namespace Sharp.Ado
                             try{d.SrvNo=reader.GetInt32(0);}catch{}
                             try{d.Till=reader.GetInt32(1);}catch{}
                             try{d.Id=reader.GetInt32(2);}catch{}
-                            try{d.Qty=Convert.ToInt64(reader.GetDecimal(3));}catch{}
+                            try{d.Qty=reader.GetDecimal(3);}catch{}
                             try{d.Amount=reader.GetDecimal(4);}catch{}
                             try{d.Department=reader.GetString(5).ToUpper();}catch{}
                             #endregion Fill Model

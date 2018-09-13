@@ -4,6 +4,8 @@ export class ItemDto {
         public departmentName?: string,
         public description?: string,
         public quantity?: number,
-        public amount?: number
+        public amount?: number,
+        public srvNo?: number,
+        public tillNo?: number
     ) {}
 }

@@ -50,7 +50,9 @@ export class Report {
         this.itemSalesPeriod.periodName = 'Today';
         this.itemSalesPeriod.chart = 'Bar Chart';
         this.itemSalesPeriod.orderBy = 'amount';
-        this.departmentSalesPeriod.isAsc = false;
+        this.itemSalesPeriod.isAsc = false;
+        this.itemSalesPeriod.svrNo = '0';
+        this.itemSalesPeriod.tillNo = '0';
         this.itemsSales = [];
 
         this.transactionsPeriod = new Period();
