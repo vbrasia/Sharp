@@ -61,12 +61,12 @@
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 mr-0 pr-0">
         <div class="input-group input-group-sm  m-0 p-0">
             <div class="input-group-prepend">
-                <span class="border border-primary input-group-text" id="">Srv No</span>
+                <span class="border border-primary input-group-text" id="">Clerk</span>
             </div>
             <select class="border border-primary"  [(ngModel)]="chosenSrvNo">
-                    <option value="0">All</option>
-                    <option *ngFor="let value of srvNos" value={{value}} >
-                        {{value}}
+                    <option value="0">All Clerks</option>
+                    <option *ngFor="let value of srvs" value={{value.srvNo}} >
+                        {{value.srvNo +"-" + value.name}}
                     </option>
             </select>
             <div class="input-group-prepend ml-2">

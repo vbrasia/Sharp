@@ -11,6 +11,7 @@ import { RequestMethod} from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/Operator/map';
 import { Report } from './report';
+import { ServerDto } from '../models/serverDto.model';
 const dailySalesUrl = 'api/daily';
 @Component({
     templateUrl: 'dailySales.component.html'
@@ -21,6 +22,7 @@ export class DailySalesComponent implements OnInit {
     startDate?: string;
     endDate?: string;
     srvNos?: number[];
+    srvs?: ServerDto[];
     tillNos?: number[];
     grouped?: DailySalesDto[];
     constructor(private repo: Repository, private localStorage: LocalStorage, private report: Report, private router: Router) {
@@ -28,6 +30,7 @@ export class DailySalesComponent implements OnInit {
             this.router.navigateByUrl('/admin/stores');
         } else {
             this.grouped = new Array();
+            this.srvs = new Array();
             if (!this.report.dailySalesPeriod.initiated) {
                 this.getPeriod().subscribe(response => {
                     if (response) {
@@ -190,6 +193,16 @@ export class DailySalesComponent implements OnInit {
             const diff = a - b;
             if (diff) {return diff; }
         });
+
+        this.srvs.length = 0;
+            if (this.repo.servers) {
+                this.repo.servers.forEach(element => {
+                    const id = element.srvNo;
+                    if (this.srvNos.indexOf(id) > -1) {
+                        this.srvs.push(element);
+                    }
+                });
+            }
     }
 
     getTillNos() {
