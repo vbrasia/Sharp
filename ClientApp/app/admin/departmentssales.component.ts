@@ -11,6 +11,7 @@ import 'rxjs/add/Operator/map';
 import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Report } from './report';
+import { ServerDto } from '../models/serverDto.model';
 const departmentUrl = 'api/departments';
 @Component({
     templateUrl: 'departmentsSales.component.html'
@@ -21,6 +22,7 @@ const departmentUrl = 'api/departments';
         startDate?: string;
         endDate?: string;
         srvNos?: number[];
+        srvs?: ServerDto[];
         tillNos?: number[];
         grouped?: DepartmentDto[];
         constructor(private repo: Repository, private localStorage: LocalStorage, private report: Report, private router: Router) {
@@ -28,6 +30,7 @@ const departmentUrl = 'api/departments';
                 this.router.navigateByUrl('/admin/stores');
             } else {
                 this.grouped = new Array();
+                this.srvs = new Array();
                 if (!this.report.departmentSalesPeriod.initiated) {
                     this.getPeriod().subscribe(response => {
                         if (response) {
@@ -197,8 +200,17 @@ const departmentUrl = 'api/departments';
                 const diff = a - b;
                 if (diff) {return diff; }
             });
-        }
 
+            this.srvs.length = 0;
+            if (this.repo.servers) {
+                this.repo.servers.forEach(element => {
+                    const id = element.srvNo;
+                    if (this.srvNos.indexOf(id) > -1) {
+                        this.srvs.push(element);
+                    }
+                });
+            }
+        }
         getTillNos() {
             this.tillNos = this.report.departmentsSales.map(u => u.till).filter( (value, index, self) => {
                 return self.indexOf(value) === index;

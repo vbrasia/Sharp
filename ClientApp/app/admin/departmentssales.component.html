@@ -65,8 +65,8 @@
             </div>
             <select class="border border-primary"  [(ngModel)]="chosenSrvNo">
                     <option value="0">All</option>
-                    <option *ngFor="let value of srvNos" value={{value}} >
-                        {{value}}
+                    <option *ngFor="let value of srvs" value={{value.srvNo}} >
+                        {{value.srvNo +"-"+ value.name}}
                     </option>
             </select>
             <div class="input-group-prepend ml-2">
