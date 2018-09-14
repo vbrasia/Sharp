@@ -57,6 +57,11 @@ export class DailySalesComponent implements OnInit {
             this.getCharts();
         }
     }
+    get screenWidth(): number {
+        return this.repo.screenWidth;
+    }
+    //#region chart
+    //#region getCharts
     private getCharts() {
         if (!this.BarChart) {
             this.getBarChart();
@@ -73,9 +78,8 @@ export class DailySalesComponent implements OnInit {
             this.dailySales.map(x => x.amount));
         }
     }
-    get screenWidth(): number {
-        return this.repo.screenWidth;
-    }
+    //#endregion getCharts
+    //#region getBarChart
     getBarChart() {
         this.BarChart = new Chart('barChart', {
             type: 'bar',
@@ -113,6 +117,8 @@ export class DailySalesComponent implements OnInit {
             }
         });
     }
+    //#endregion getBarChart
+    //#region getPieChart
     getPieChart() {
         this.PieChart = new Chart('pieChart', {
             type: 'pie',
@@ -135,6 +141,8 @@ export class DailySalesComponent implements OnInit {
             }
         });
     }
+    //#endregion getPieChart
+    //#endregion chart
     private removeData(chart) {
         chart.data.labels.length = 0;
         chart.data.datasets.forEach((dataset) => {
@@ -339,6 +347,7 @@ export class DailySalesComponent implements OnInit {
             return false;
         }
     }
+    //#region pdf
     exportToPdf() {
         const store = this.repo.selecttedStore;
             const data = this.dailySales;
@@ -386,7 +395,7 @@ export class DailySalesComponent implements OnInit {
                     doc.setFontType('normal');
                     k = k + 1;
                 }
-                // endregion table header
+                /* endregion table header */
                 const element = data[index];
                 doc.setDrawColor(224, 224, 224);
                 doc.cell(leftMargin, topMargin, cell1Width, rowHeight, element.dayDate, k, 'left');
@@ -396,7 +405,7 @@ export class DailySalesComponent implements OnInit {
                 k = k + 1;
                 pageNumber = Math.floor((k - 1) / 30) + 1;
             }
-            // total
+            /* total */
             doc.setFontSize(14);
             doc.setFontType('normal');
             doc.setDrawColor(224, 224, 224);
@@ -405,10 +414,10 @@ export class DailySalesComponent implements OnInit {
             doc.cell(leftMargin4, topMargin, cell4Width, rowHeight, this.getTotalAmount().toFixed(2), k, 'right');
             doc.setFontSize(12);
             doc.setFontType('normal');
-            // endregion total
+            /* endregion total */
             const ele = document.getElementById('chartToPdfDailySales');
             html2canvas(ele).then(canvas => {
-                // Few necessary setting options
+                /* Few necessary setting options */
                 const imgWidth = 500;
                 const pageHeight = 800;
                 const imgHeight = canvas.height * imgWidth / canvas.width;
@@ -417,7 +426,7 @@ export class DailySalesComponent implements OnInit {
 
                 doc.addPage();
                 doc.addImage(contentDataURL, 'PNG', 40, 140, imgWidth, imgHeight);
-                // region Page header and footer
+                /* region Page header and footer */
                 const pageCount = doc.internal.getNumberOfPages();
                 for (let i = 0; i < pageCount; i++) {
                     doc.setPage(i);
@@ -444,11 +453,12 @@ export class DailySalesComponent implements OnInit {
                     doc.text(this.report.getDateUkformat((new Date())), 460, 120);
                     doc.line(40, 130, 555, 130);
                 }
-                 // endregion Page header and footer
+                 /* endregion Page header and footer */
                 doc.save('DailySales.pdf');
               }).catch(e => {
                 console.log('Daily Sales Report Error.');
                 console.log(e);
             });
     }
+    //#endregion pdf
 }

@@ -57,6 +57,18 @@ const departmentUrl = 'api/departments';
                 this.getCharts();
             }
         }
+        get orderBy(): string {
+             return this.report.departmentSalesPeriod.orderBy;
+        }
+        get isAsc(): boolean {
+            return this.report.departmentSalesPeriod.isAsc;
+        }
+        get screenWidth(): number {
+            return this.repo.screenWidth;
+        }
+
+        //#region charts
+        //#region getCharts
         private getCharts() {
             if (!this.BarChart) {
                 this.getBarChart();
@@ -73,15 +85,8 @@ const departmentUrl = 'api/departments';
                 this.departmentSales.map(x => x.amount));
             }
         }
-        get orderBy(): string {
-             return this.report.departmentSalesPeriod.orderBy;
-        }
-        get isAsc(): boolean {
-            return this.report.departmentSalesPeriod.isAsc;
-        }
-        get screenWidth(): number {
-            return this.repo.screenWidth;
-        }
+        //#endregion getCharts
+        //#region getBarChart
         getBarChart() {
             this.BarChart = new Chart('barChart', {
                 type: 'bar',
@@ -119,6 +124,8 @@ const departmentUrl = 'api/departments';
                 }
             });
         }
+        //#endregion getBarChart
+        //#region getPieChart
         getPieChart() {
             this.PieChart = new Chart('pieChart', {
                 type: 'pie',
@@ -141,6 +148,9 @@ const departmentUrl = 'api/departments';
                 }
             });
         }
+        //#endregion getPieChart
+        //#endregion charts
+
         private removeData(chart) {
             chart.data.labels.length = 0;
             chart.data.datasets.forEach((dataset) => {
@@ -275,6 +285,7 @@ const departmentUrl = 'api/departments';
                 });
             }
         }
+        //#region departmentSales
         get departmentSales(): DepartmentDto[] {
             if (this.grouped) {
                 if (this.orderBy === 'department') {
@@ -314,6 +325,7 @@ const departmentUrl = 'api/departments';
                 }
             }
         }
+        //#endregion departmentSales
         setPeriod(tag?: string) {
             if (tag !== this.report.departmentSalesPeriod.periodName) {
                 this.report.departmentSalesPeriod.periodName = tag;
@@ -385,6 +397,7 @@ const departmentUrl = 'api/departments';
                 return false;
             }
         }
+        //#region pdf
         exportToPdf() {
             const store = this.repo.selecttedStore;
             const data = this.departmentSales;
@@ -421,14 +434,15 @@ const departmentUrl = 'api/departments';
                     doc.setFontSize(14);
                     doc.setFontType('normal');
                     doc.setDrawColor(224, 224, 224);
+                    //#region table header
                     doc.cell(leftMargin, topMargin, cell1Width, rowHeight, 'Department', k, 'left');
                     doc.cell(leftMargin2, topMargin, cell2Width, rowHeight, 'Quantity' , k, 'left');
                     doc.cell(leftMargin3, topMargin, cell3Width, rowHeight, 'Amount', k, 'right');
+                    //#endregion table header
                     doc.setFontSize(12);
                     doc.setFontType('normal');
                     k = k + 1;
                 }
-                // endregion table header
                 const element = data[index];
                 doc.setDrawColor(224, 224, 224);
                 doc.cell(leftMargin, topMargin, cell1Width, rowHeight, element.department, k, 'left');
@@ -437,19 +451,19 @@ const departmentUrl = 'api/departments';
                 k = k + 1;
                 pageNumber = Math.floor((k - 1) / 30) + 1;
             }
-            // total
             doc.setFontSize(14);
             doc.setFontType('normal');
             doc.setDrawColor(224, 224, 224);
+            //#region Total
             doc.cell(leftMargin, topMargin, cell1Width, rowHeight, 'Total', k, 'left');
             doc.cell(leftMargin2, topMargin, cell2Width, rowHeight, this.getTotalQty().toString(), k, 'left');
             doc.cell(leftMargin3, topMargin, cell3Width, rowHeight, this.getTotalAmount().toFixed(2), k, 'right');
+            //#endregion Total
             doc.setFontSize(12);
             doc.setFontType('normal');
-            // endregion total
             const ele = document.getElementById('chartToPdfDepartmentSales');
             html2canvas(ele).then(canvas => {
-                // Few necessary setting options
+                /* Few necessary setting options */
                 const imgWidth = 500;
                 const pageHeight = 800;
                 const imgHeight = canvas.height * imgWidth / canvas.width;
@@ -458,7 +472,7 @@ const departmentUrl = 'api/departments';
 
                 doc.addPage();
                 doc.addImage(contentDataURL, 'PNG', 40, 140, imgWidth, imgHeight);
-                // region Page header and footer
+                //#region Page header and footer
                 const pageCount = doc.internal.getNumberOfPages();
                 for (let i = 0; i < pageCount; i++) {
                     doc.setPage(i);
@@ -485,13 +499,14 @@ const departmentUrl = 'api/departments';
                     doc.text(this.report.getDateUkformat((new Date())), 460, 120);
                     doc.line(40, 130, 555, 130);
                 }
-                 // endregion Page header and footer
+                 //#endregion Page header and footer
                 doc.save('DepartmentSales.pdf');
               }).catch(e => {
                 console.log('Department Sales Report Error.');
                 console.log(e);
             });
-            // doc.autoPrint();
-            // window.open(doc.output('bloburl'), '_blank');
+            /*doc.autoPrint();*/
+            /*window.open(doc.output('bloburl'), '_blank');*/
         }
+        //#endregion pdf
     }

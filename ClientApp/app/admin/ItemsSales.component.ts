@@ -58,6 +58,12 @@ const itemUrl = 'api/items';
                 this.getCharts();
             }
         }
+        get screenWidth(): number {
+            return this.repo.screenWidth;
+        }
+
+        //#region chart
+        //#region getCharts
         private getCharts() {
             if (!this.BarChart) {
                 this.getBarChart();
@@ -74,9 +80,8 @@ const itemUrl = 'api/items';
                 this.gettop20().map(x => x.amount));
             }
         }
-        get screenWidth(): number {
-            return this.repo.screenWidth;
-        }
+        //#endregion getCharts
+        //#region getBarChart
         getBarChart() {
             this.BarChart = new Chart('barChart', {
                 type: 'bar',
@@ -114,6 +119,8 @@ const itemUrl = 'api/items';
                 }
             });
         }
+        //#endregion getBarChart
+        //#region getPieChart
         getPieChart() {
             this.PieChart = new Chart('pieChart', {
                 type: 'pie',
@@ -136,6 +143,9 @@ const itemUrl = 'api/items';
                 }
             });
         }
+        //#endregion getPieChart
+        //#endregion chart
+
         private removeData(chart) {
             chart.data.labels.length = 0;
             chart.data.datasets.forEach((dataset) => {
@@ -283,6 +293,7 @@ const itemUrl = 'api/items';
                 });
             }
         }
+        //#region itemSales
         get itemSales(): ItemDto[] {
             if (this.grouped) {
             if (this.orderBy === 'product') {
@@ -322,6 +333,7 @@ const itemUrl = 'api/items';
             }
         }
         }
+        //#endregion itemSales
         setPeriod(tag?: string) {
             if (tag !== this.report.itemSalesPeriod.periodName) {
                 this.report.itemSalesPeriod.periodName = tag;
@@ -401,6 +413,7 @@ const itemUrl = 'api/items';
                 return false;
             }
         }
+        //#region pdf
         exportToPdf() {
             const store = this.repo.selecttedStore;
             const data = this.itemSales;
@@ -444,7 +457,7 @@ const itemUrl = 'api/items';
                     doc.setFontType('normal');
                     k = k + 1;
                 }
-                // endregion table header
+                /* endregion table header */
                 const element = data[index];
                 doc.setDrawColor(224, 224, 224);
                 doc.cell(leftMargin, topMargin, cell1Width, rowHeight, element.description, k, 'left');
@@ -453,7 +466,7 @@ const itemUrl = 'api/items';
                 k = k + 1;
                 pageNumber = Math.floor((k - 1) / 30) + 1;
             }
-            // total
+            /* total */
             doc.setFontSize(14);
             doc.setFontType('normal');
             doc.setDrawColor(224, 224, 224);
@@ -462,10 +475,10 @@ const itemUrl = 'api/items';
             doc.cell(leftMargin3, topMargin, cell3Width, rowHeight, this.getTotalAmount().toFixed(2), k, 'right');
             doc.setFontSize(12);
             doc.setFontType('normal');
-            // endregion total
+            /* endregion  */
             const ele = document.getElementById('chartToPdfProductSales');
             html2canvas(ele).then(canvas => {
-                // Few necessary setting options
+                /* Few necessary setting options */
                 const imgWidth = 500;
                 const pageHeight = 800;
                 const imgHeight = canvas.height * imgWidth / canvas.width;
@@ -473,7 +486,7 @@ const itemUrl = 'api/items';
                 const contentDataURL = canvas.toDataURL('image/png');
                 doc.addPage();
                 doc.addImage(contentDataURL, 'PNG', 40, 140, imgWidth, imgHeight);
-                // region Page header and footer
+                /* region Page header and footer */
                 const pageCount = doc.internal.getNumberOfPages();
                 for (let i = 0; i < pageCount; i++) {
                     doc.setPage(i);
@@ -500,11 +513,12 @@ const itemUrl = 'api/items';
                     doc.text(this.report.getDateUkformat((new Date())), 460, 120);
                     doc.line(40, 130, 555, 130);
                 }
-                 // endregion Page header and footer
+                 /* endregion Page header and footer */
                 doc.save('ProductSales.pdf');
               }).catch(e => {
                 console.log('Item Sales Report Error.');
                 console.log(e);
             });
         }
+        //#endregion pdf
     }
