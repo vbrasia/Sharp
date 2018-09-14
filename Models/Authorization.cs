@@ -25,6 +25,6 @@ namespace Sharp.Models
         public string Icon{get;set;}="";
         [StringLength(50)]
         public string Css{get;set;}="";
-        public bool Live{get;set;}=false; // yes
+        public bool Live{get;set;}=false;
     }
 }
