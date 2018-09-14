@@ -13,6 +13,7 @@ import { RequestMethod} from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/Operator/map';
 import { Dashboard } from './dashboard';
+import { ServerDto } from '../models/serverDto.model';
 const dailySalesUrl = 'api/daily';
 const itemUrl = 'api/items';
 const departmentUrl = 'api/departments';
@@ -20,6 +21,14 @@ const departmentUrl = 'api/departments';
     templateUrl: 'dashboard.component.html'
     })
     export class DashboardComponent implements OnInit {
+
+        srvNos?: number[];
+        srvs?: ServerDto[];
+        tillNos?: number[];
+        groupedDaily?: DailySalesDto[];
+        groupedItem?: ItemDto[];
+        groupedDepartment?: DepartmentDto[];
+
         DailyBarChartSales: any;
         DailyBarChartQty: any;
         DailyPieChartSales: any;
@@ -41,6 +50,8 @@ const departmentUrl = 'api/departments';
             if (!repo.selecttedStore) {
                 this.router.navigateByUrl('/admin/stores');
             } else {
+                this.groupedDaily = new Array();
+                this.srvs = new Array();
                 if (!this.dashboard.dashboardPeriod.initiated) {
                     this.getPeriod().subscribe(response => {
                         if (response) {
@@ -92,6 +103,31 @@ const departmentUrl = 'api/departments';
                 this.getDepartmentCharts();
                 this.getDailySalesCharts();
             }
+        }
+        getSrvNos() {
+            this.srvNos = this.dashboard.dailySales.map(u => u.srvNo).filter( (value, index, self) => {
+                return self.indexOf(value) === index;
+            } ).sort((a, b ) => {
+                const diff = a - b;
+                if (diff) {return diff; }
+            });
+            this.srvs.length = 0;
+                if (this.repo.servers) {
+                    this.repo.servers.forEach(element => {
+                        const id = element.srvNo;
+                        if (this.srvNos.indexOf(id) > -1) {
+                            this.srvs.push(element);
+                        }
+                    });
+                }
+        }
+        getTillNos() {
+            this.tillNos = this.dashboard.dailySales.map(u => u.tillNo).filter( (value, index, self) => {
+                return self.indexOf(value) === index;
+            } ).sort((a, b) => {
+                const diff = a - b;
+                if (diff) { return diff ; }
+            });
         }
         savePeriod(period: Period) {
             this.getPeriod().subscribe(response => {
