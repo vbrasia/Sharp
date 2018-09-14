@@ -57,6 +57,22 @@
         </form>
     </div>
 </div>
+<label>srv no</label>
+<select class="border border-primary" [(ngModel)]="chosenSrvNo">
+    <option value="0">All Clerks</option>
+    <option *ngFor="let value of srvs" value={{value.srvNo}} >
+        {{value.srvNo +"-"+value.name}}
+    </option>
+</select>
+
+<label>till no</label>
+<select class="border border-primary"[(ngModel)]="chosenTillNo" >
+    <option value="0">All</option>
+    <option *ngFor="let value of tillNos" value={{value}} >
+        {{value}}
+    </option>
+</select>
+
 <div class="row my-1">
     <div class="col-sm-12 col-lg-12 col-md-12 col-xs-12">
         <div class="pull-right">
