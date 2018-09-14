@@ -94,6 +94,8 @@ export class Report {
         this.dailySalesPeriod.endDate = dde;
         this.dailySalesPeriod.periodName = 'Last 10 Days';
         this.dailySalesPeriod.chart = 'Bar Chart';
+        this.dailySalesPeriod.svrNo = '0';
+        this.dailySalesPeriod.tillNo = '0';
         this.dailySales = [];
     }
     public reset() {
