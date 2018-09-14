@@ -51,6 +51,8 @@ const departmentUrl = 'api/departments';
                 this.router.navigateByUrl('/admin/stores');
             } else {
                 this.groupedDaily = new Array();
+                this.groupedItem = new Array();
+                this.groupedDepartment = new Array();
                 this.srvs = new Array();
                 if (!this.dashboard.dashboardPeriod.initiated) {
                     this.getPeriod().subscribe(response => {
@@ -105,7 +107,7 @@ const departmentUrl = 'api/departments';
             }
         }
         getSrvNos() {
-            this.srvNos = this.dashboard.dailySales.map(u => u.srvNo).filter( (value, index, self) => {
+            this.srvNos = this.dashboard.itemsSales.map(u => u.srvNo).filter( (value, index, self) => {
                 return self.indexOf(value) === index;
             } ).sort((a, b ) => {
                 const diff = a - b;
@@ -122,7 +124,7 @@ const departmentUrl = 'api/departments';
                 }
         }
         getTillNos() {
-            this.tillNos = this.dashboard.dailySales.map(u => u.tillNo).filter( (value, index, self) => {
+            this.tillNos = this.dashboard.itemsSales.map(u => u.tillNo).filter( (value, index, self) => {
                 return self.indexOf(value) === index;
             } ).sort((a, b) => {
                 const diff = a - b;
@@ -375,6 +377,8 @@ const departmentUrl = 'api/departments';
                         url = itemUrl + '/sales';
                         this.repo.sendRequest(RequestMethod.Post, url, this.repo.storeDto).subscribe(response3 => {
                             this.dashboard.itemsSales = response3;
+                            this.getSrvNos();
+                            this.getTillNos();
                             this.getItemCharts();
                             this.repo.apiBusy = false;
                         });

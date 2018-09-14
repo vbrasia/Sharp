@@ -15,6 +15,8 @@ export class Dashboard {
         this.dashboardPeriod.endDate = this.getEndDateByTag('Last Week');
         this.dashboardPeriod.periodName = 'Last Week';
         this.dashboardPeriod.chart = 'Bar Chart';
+        this.dashboardPeriod.svrNo = '0';
+        this.dashboardPeriod.tillNo = '0';
 
         this.itemsSales = [];
         this.departmentsSales = [];
