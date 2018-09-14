@@ -1,6 +1,5 @@
 namespace Sharp.Models
 {
-    // testing fetch
     public class ItemDto
     {
         public int DepartmentId{get;set;}
@@ -9,6 +8,6 @@ namespace Sharp.Models
         public decimal Quantity{get;set;}
         public decimal Amount{get;set;}
         public int SrvNo{get;set;}
-        public int TillNo{get;set;} // testing mayura
+        public int TillNo{get;set;}
     }
 }
