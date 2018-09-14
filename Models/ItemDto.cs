@@ -9,6 +9,6 @@ namespace Sharp.Models
         public decimal Quantity{get;set;}
         public decimal Amount{get;set;}
         public int SrvNo{get;set;}
-        public int TillNo{get;set;}
+        public int TillNo{get;set;} // testing
     }
 }
