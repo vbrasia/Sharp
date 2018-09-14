@@ -23,7 +23,7 @@ namespace Sharp.Ado
             Sql +="select I.TrnNo,sum(I.qty0*I.price) Amount,H.Dt,DATENAME(dw,H.Dt) [DayName],H.SrvNo,H.Till from TranItems I left join ( ";
             Sql +="select TrnNo,DateTimeEnd, CONVERT(date, DateTimeEnd) Dt,SrvNo,Till from dbo.TranHeaders) as H ";
             Sql +="on I.TrnNo=H.TrnNo ";
-            Sql +="where I.voidd=0 and DateTimeEnd between '2018-09-02' and '2018-09-11' ";
+            Sql +="where I.voidd=0 and DateTimeEnd between @Sd and @Ed ";
             Sql +="group by I.TrnNo,H.Dt,H.SrvNo,H.Till ";
             Sql +="order by H.Dt ";
             Sql +="select DayDate,[DayName],SUM(Amount) Amount, COUNT(TrnNo) Trns, SrvNo ,TillNo from @S ";
