@@ -1,6 +1,6 @@
 namespace Sharp.Models
 {
-    // testing
+    // testing fetch
     public class ItemDto
     {
         public int DepartmentId{get;set;}
