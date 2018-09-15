@@ -144,8 +144,6 @@ const itemUrl = 'api/items';
             });
         }
         //#endregion getPieChart
-        //#endregion chart
-
         private removeData(chart) {
             chart.data.labels.length = 0;
             chart.data.datasets.forEach((dataset) => {
@@ -164,6 +162,7 @@ const itemUrl = 'api/items';
             });
             chart.update();
         }
+        //#endregion chart
         gettop20(): ItemDto[] {
             if (this.grouped.length < 2) {
                 return this.grouped;
@@ -261,6 +260,7 @@ const itemUrl = 'api/items';
         get chosenSrvNo(): string {
             return this.report.itemSalesPeriod.svrNo;
         }
+        //#region itemSales
         get filteredItemSales():  ItemDto[] {
             if (this.report.itemsSales) {
                 const srvNo = Number(this.chosenSrvNo);
@@ -293,7 +293,6 @@ const itemUrl = 'api/items';
                 });
             }
         }
-        //#region itemSales
         get itemSales(): ItemDto[] {
             if (this.grouped) {
             if (this.orderBy === 'product') {
@@ -450,14 +449,15 @@ const itemUrl = 'api/items';
                     doc.setFontSize(14);
                     doc.setFontType('normal');
                     doc.setDrawColor(224, 224, 224);
+                    //#region table header
                     doc.cell(leftMargin, topMargin, cell1Width, rowHeight, 'Description', k, 'left');
                     doc.cell(leftMargin2, topMargin, cell2Width, rowHeight, 'Quantity' , k, 'left');
                     doc.cell(leftMargin3, topMargin, cell3Width, rowHeight, 'Amount', k, 'right');
+                    //#endregion table header
                     doc.setFontSize(12);
                     doc.setFontType('normal');
                     k = k + 1;
                 }
-                /* endregion table header */
                 const element = data[index];
                 doc.setDrawColor(224, 224, 224);
                 doc.cell(leftMargin, topMargin, cell1Width, rowHeight, element.description, k, 'left');
@@ -466,16 +466,16 @@ const itemUrl = 'api/items';
                 k = k + 1;
                 pageNumber = Math.floor((k - 1) / 30) + 1;
             }
-            /* total */
             doc.setFontSize(14);
             doc.setFontType('normal');
             doc.setDrawColor(224, 224, 224);
+            //#region Total
             doc.cell(leftMargin, topMargin, cell1Width, rowHeight, 'Total', k, 'left');
             doc.cell(leftMargin2, topMargin, cell2Width, rowHeight, this.getTotalQty().toString(), k, 'left');
             doc.cell(leftMargin3, topMargin, cell3Width, rowHeight, this.getTotalAmount().toFixed(2), k, 'right');
             doc.setFontSize(12);
             doc.setFontType('normal');
-            /* endregion  */
+            //#endregion Total
             const ele = document.getElementById('chartToPdfProductSales');
             html2canvas(ele).then(canvas => {
                 /* Few necessary setting options */
@@ -486,7 +486,7 @@ const itemUrl = 'api/items';
                 const contentDataURL = canvas.toDataURL('image/png');
                 doc.addPage();
                 doc.addImage(contentDataURL, 'PNG', 40, 140, imgWidth, imgHeight);
-                /* region Page header and footer */
+                //#region Page header and footer */
                 const pageCount = doc.internal.getNumberOfPages();
                 for (let i = 0; i < pageCount; i++) {
                     doc.setPage(i);
@@ -513,7 +513,7 @@ const itemUrl = 'api/items';
                     doc.text(this.report.getDateUkformat((new Date())), 460, 120);
                     doc.line(40, 130, 555, 130);
                 }
-                 /* endregion Page header and footer */
+                //#endregion Page header and footer */
                 doc.save('ProductSales.pdf');
               }).catch(e => {
                 console.log('Item Sales Report Error.');

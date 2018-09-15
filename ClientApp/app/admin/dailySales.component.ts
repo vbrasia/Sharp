@@ -142,7 +142,6 @@ export class DailySalesComponent implements OnInit {
         });
     }
     //#endregion getPieChart
-    //#endregion chart
     private removeData(chart) {
         chart.data.labels.length = 0;
         chart.data.datasets.forEach((dataset) => {
@@ -161,6 +160,7 @@ export class DailySalesComponent implements OnInit {
         });
         chart.update();
     }
+    //#endregion chart
     getDailySales() {
         const url = dailySalesUrl + '/sales';
         this.repo.storeDto.startDate = this.startDate;
@@ -243,6 +243,7 @@ export class DailySalesComponent implements OnInit {
     get chosenTillNo(): string {
         return this.report.dailySalesPeriod.tillNo;
     }
+    //#region dailySales
     get filteredDailySales():  DailySalesDto[] {
         if (this.report.dailySales) {
             const srvNo = Number(this.chosenSrvNo);
@@ -280,6 +281,7 @@ export class DailySalesComponent implements OnInit {
             return this.grouped;
         }
     }
+    //#endregion dailySales
     get chartLabels() {
         const label = [];
         this.dailySales.forEach(element => {
@@ -387,15 +389,16 @@ export class DailySalesComponent implements OnInit {
                     doc.setFontSize(14);
                     doc.setFontType('normal');
                     doc.setDrawColor(224, 224, 224);
+                    //#region table header
                     doc.cell(leftMargin, topMargin, cell1Width, rowHeight, 'Date', k, 'left');
                     doc.cell(leftMargin2, topMargin, cell2Width, rowHeight, 'Day' , k, 'left');
                     doc.cell(leftMargin3, topMargin, cell3Width, rowHeight, 'Transactions', k, 'left');
                     doc.cell(leftMargin4, topMargin, cell4Width, rowHeight, 'Amount', k, 'right');
+                    //#endregion table header
                     doc.setFontSize(12);
                     doc.setFontType('normal');
                     k = k + 1;
                 }
-                /* endregion table header */
                 const element = data[index];
                 doc.setDrawColor(224, 224, 224);
                 doc.cell(leftMargin, topMargin, cell1Width, rowHeight, element.dayDate, k, 'left');
@@ -405,16 +408,16 @@ export class DailySalesComponent implements OnInit {
                 k = k + 1;
                 pageNumber = Math.floor((k - 1) / 30) + 1;
             }
-            /* total */
             doc.setFontSize(14);
             doc.setFontType('normal');
             doc.setDrawColor(224, 224, 224);
+            //#region Total
             doc.cell(leftMargin, topMargin, cell1Width + cell2Width, rowHeight, 'Total', k, 'left');
             doc.cell(leftMargin3, topMargin, cell3Width, rowHeight, this.getTotalTrans().toString(), k, 'left');
             doc.cell(leftMargin4, topMargin, cell4Width, rowHeight, this.getTotalAmount().toFixed(2), k, 'right');
+            //#endregion Total
             doc.setFontSize(12);
             doc.setFontType('normal');
-            /* endregion total */
             const ele = document.getElementById('chartToPdfDailySales');
             html2canvas(ele).then(canvas => {
                 /* Few necessary setting options */
@@ -426,7 +429,7 @@ export class DailySalesComponent implements OnInit {
 
                 doc.addPage();
                 doc.addImage(contentDataURL, 'PNG', 40, 140, imgWidth, imgHeight);
-                /* region Page header and footer */
+                //#region Page header and footer
                 const pageCount = doc.internal.getNumberOfPages();
                 for (let i = 0; i < pageCount; i++) {
                     doc.setPage(i);
@@ -453,7 +456,7 @@ export class DailySalesComponent implements OnInit {
                     doc.text(this.report.getDateUkformat((new Date())), 460, 120);
                     doc.line(40, 130, 555, 130);
                 }
-                 /* endregion Page header and footer */
+                //#endregion Page header and footer */
                 doc.save('DailySales.pdf');
               }).catch(e => {
                 console.log('Daily Sales Report Error.');

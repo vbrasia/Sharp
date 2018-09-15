@@ -149,7 +149,6 @@ const departmentUrl = 'api/departments';
             });
         }
         //#endregion getPieChart
-        //#endregion charts
 
         private removeData(chart) {
             chart.data.labels.length = 0;
@@ -169,6 +168,7 @@ const departmentUrl = 'api/departments';
             });
             chart.update();
         }
+        //#endregion charts
         getDepartmentSales() {
             const url = departmentUrl + '/sales';
             this.repo.storeDto.startDate = this.startDate;
@@ -252,7 +252,7 @@ const departmentUrl = 'api/departments';
         get chosenTillNo(): string {
             return this.report.departmentSalesPeriod.tillNo;
         }
-
+        //#region departmentSales
         get filteredDepartmentSales():  DepartmentDto[] {
             if (this.report.departmentsSales) {
                 const srvNo = Number(this.chosenSrvNo);
@@ -285,7 +285,6 @@ const departmentUrl = 'api/departments';
                 });
             }
         }
-        //#region departmentSales
         get departmentSales(): DepartmentDto[] {
             if (this.grouped) {
                 if (this.orderBy === 'department') {
